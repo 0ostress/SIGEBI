@@ -21,6 +21,9 @@ namespace SIGEBI.IOC
             services.AddScoped<IPrestamoService, SolicitarPrestamoUseCase>();
             services.AddScoped<IPenalizacionService, AplicarPenalizacionUseCase>();
 
+            // agregar servicio de recurso
+            services.AddScoped<IRecursoService, GestionarRecursoUseCase>();
+
             // casos de uso sin interfaz propia que se registran directamente
             services.AddScoped<RegistrarDevolucionUseCase>();
 

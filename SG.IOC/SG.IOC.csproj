@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SGA.Api\SGA.Api.csproj" />
+    <ProjectReference Include="..\SGA.Application.Test\SGA.Application.Test.csproj" />
+    <ProjectReference Include="..\SGA.Application\SGA.Application.csproj" />
+    <ProjectReference Include="..\SGA.Domain\SGA.Domain.csproj" />
+    <ProjectReference Include="..\SGA.Infrastructure\SGA.Infrastructure.csproj" />
+    <ProjectReference Include="..\SGA.Persistence.Test\SGA.Persistence.Test.csproj" />
+    <ProjectReference Include="..\SGA.Persistence\SGA.Persistence.csproj" />
+    <ProjectReference Include="..\SGA.Web\SGA.Web.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -2,6 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SIGEBI.Domain\SIGEBI.Domain.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\SIGEBI.Persistence\SIGEBI.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
   <PropertyGroup>

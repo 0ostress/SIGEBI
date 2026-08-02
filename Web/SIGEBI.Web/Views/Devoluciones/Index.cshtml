@@ -1,0 +1,32 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PrestamoDTO>
+
+<h2>Devoluciones Pendientes</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Recurso</th>
+            <th>Fecha Vencimiento</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prestamo in Model)
+        {
+            <tr>
+                <td>@prestamo.NombreUsuario</td>
+                <td>@prestamo.TituloRecurso</td>
+                <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                <td>@prestamo.Estado</td>
+                <td>
+                    <form method="post" asp-action="Registrar">
+                        <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                        <button type="submit" class="btn btn-primary">Registrar Devolución</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

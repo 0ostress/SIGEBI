@@ -1,0 +1,29 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PenalizacionDTO>
+
+<h2>Penalizaciones</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha Aplicación</th>
+            <th>Fecha Resolución</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var penalizacion in Model)
+        {
+            <tr>
+                <td>@penalizacion.NombreUsuario</td>
+                <td>@penalizacion.Tipo</td>
+                <td>@penalizacion.Estado</td>
+                <td>@penalizacion.FechaAplicacion.ToShortDateString()</td>
+                <td>@penalizacion.FechaResolucion.ToShortDateString()</td>
+                <td>@penalizacion.Descripcion</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,27 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PrestamoDTO>
+
+<h2>Préstamos del Sistema</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Recurso</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Vencimiento</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prestamo in Model)
+        {
+            <tr>
+                <td>@prestamo.NombreUsuario</td>
+                <td>@prestamo.TituloRecurso</td>
+                <td>@prestamo.FechaInicio.ToShortDateString()</td>
+                <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                <td>@prestamo.Estado</td>
+            </tr>
+        }
+    </tbody>
+</table>

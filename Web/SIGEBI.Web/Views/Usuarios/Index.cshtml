@@ -1,0 +1,27 @@
+@model IEnumerable<SIGEBI.Business.DTOs.UsuarioDTO>
+
+<h2>Usuarios del Sistema</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.Nombre</td>
+                <td>@usuario.Apellido</td>
+                <td>@usuario.Email</td>
+                <td>@usuario.Rol</td>
+                <td>@usuario.Estado</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SIGEBI.Business.Interfaces;
 using SIGEBI.Business.UseCases;
 
 namespace SIGEBI.Web.Controllers
@@ -6,15 +7,18 @@ namespace SIGEBI.Web.Controllers
     public class DevolucionesController : Controller
     {
         private readonly RegistrarDevolucionUseCase _devolucionUseCase;
+        private readonly IPrestamoService _prestamoService;
 
-        public DevolucionesController(RegistrarDevolucionUseCase devolucionUseCase)
+        public DevolucionesController(RegistrarDevolucionUseCase devolucionUseCase, IPrestamoService prestamoService)
         {
             _devolucionUseCase = devolucionUseCase;
+            _prestamoService = prestamoService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var prestamos = await _prestamoService.ObtenerTodosAsync();
+            return View(prestamos);
         }
 
         [HttpPost]

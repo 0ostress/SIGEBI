@@ -46,7 +46,7 @@ namespace SIGEBI.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { mensaje = ex.Message });
+                return BadRequest(new { mensaje = ex.Message, detalle = ex.InnerException?.Message });
             }
         }
 

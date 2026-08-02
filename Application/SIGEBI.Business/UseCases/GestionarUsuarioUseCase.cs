@@ -61,6 +61,7 @@ namespace SIGEBI.Business.UseCases
                 Nombre = usuarioDto.Nombre,
                 Apellido = usuarioDto.Apellido,
                 Email = usuarioDto.Email,
+                PasswordHash = usuarioDto.PasswordHash,
                 Rol = usuarioDto.Rol,
                 Estado = "Activo",
                 FechaRegistro = DateTime.Now

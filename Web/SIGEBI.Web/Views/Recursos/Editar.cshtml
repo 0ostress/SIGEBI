@@ -1,0 +1,73 @@
+@model SIGEBI.Business.DTOs.RecursoDTO
+
+@{
+    ViewData["Title"] = "Editar Recurso";
+}
+
+<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Editar Recurso</h2>
+    <p class="descripcion">
+        Modifica la información del recurso bibliográfico. 
+        Los cambios se aplicarán de inmediato.
+    </p>
+
+    <form method="post" asp-action="Editar">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" name="Titulo" value="@Model.Titulo" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Autor</label>
+            <input type="text" name="Autor" value="@Model.Autor" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ISBN (opcional)</label>
+            <input type="text" name="ISBN" value="@Model.ISBN" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Categoría</label>
+            <select name="Categoria" class="form-select">
+                @foreach (var cat in new[] { "Programacion", "Matematicas", "Ciencias", "Historia", "Literatura", "Ingenieria", "Otro" })
+                {
+                    if (Model.Categoria == cat)
+                    {
+                        <option value="@cat" selected>@cat</option>
+                    }
+                    else
+                    {
+                        <option value="@cat">@cat</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Estado</label>
+            <select name="Estado" class="form-select">
+                @foreach (var estado in new[] { "Disponible", "Prestado", "FueraDeServicio" })
+                {
+                    if (Model.Estado == estado)
+                    {
+                        <option value="@estado" selected>@estado</option>
+                    }
+                    else
+                    {
+                        <option value="@estado">@estado</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Cantidad Total</label>
+            <input type="number" name="CantidadTotal" value="@Model.CantidadTotal" class="form-control" min="1" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Cantidad Disponible</label>
+            <input type="number" name="CantidadDisponible" value="@Model.CantidadDisponible" class="form-control" min="0" required />
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn-sigebi">Guardar Cambios</button>
+            <a asp-action="Index" class="btn-outline-sigebi">Cancelar</a>
+        </div>
+    </form>
+</div>

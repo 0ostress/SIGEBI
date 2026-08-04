@@ -1,0 +1,48 @@
+@model SIGEBI.Business.DTOs.RecursoDTO
+
+@{
+    ViewData["Title"] = "Nuevo Recurso";
+}
+
+<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Registrar Recurso</h2>
+    <p class="descripcion">
+        Completa el formulario para agregar un nuevo recurso al catálogo bibliográfico. 
+        La cantidad disponible se establecerá igual a la cantidad total si no se especifica.
+    </p>
+
+    <form method="post" asp-action="Crear">
+        <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" name="Titulo" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Autor</label>
+            <input type="text" name="Autor" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ISBN (opcional)</label>
+            <input type="text" name="ISBN" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Categoría</label>
+            <select name="Categoria" class="form-select">
+                <option value="Programacion">Programación</option>
+                <option value="Matematicas">Matemáticas</option>
+                <option value="Ciencias">Ciencias</option>
+                <option value="Historia">Historia</option>
+                <option value="Literatura">Literatura</option>
+                <option value="Ingenieria">Ingeniería</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Cantidad Total de Ejemplares</label>
+            <input type="number" name="CantidadTotal" class="form-control" min="1" required />
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn-sigebi">Registrar</button>
+            <a asp-action="Index" class="btn-outline-sigebi">Cancelar</a>
+        </div>
+    </form>
+</div>

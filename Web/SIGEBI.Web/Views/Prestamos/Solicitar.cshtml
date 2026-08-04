@@ -5,22 +5,34 @@
 <div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
     <h2>Solicitar Préstamo</h2>
     <p class="descripcion">
-        Ingresa el ID del usuario y el ID del recurso bibliográfico que deseas prestar. 
-        El sistema verificará automáticamente que el usuario esté activo, no tenga penalizaciones 
-        y que el recurso tenga ejemplares disponibles antes de registrar el préstamo.
+        Selecciona el usuario y el recurso bibliográfico que deseas prestar. 
+        El sistema verificará automáticamente que el usuario esté activo y que 
+        el recurso tenga ejemplares disponibles.
     </p>
 
     <form method="post" asp-action="Solicitar">
         <div class="mb-3">
-            <label class="form-label">ID del Usuario</label>
-            <input type="number" name="usuarioId" class="form-control" required />
+            <label class="form-label">Usuario</label>
+            <select name="usuarioId" class="form-select" required>
+                <option value="">-- Selecciona un usuario --</option>
+                @foreach (var usuario in ViewBag.Usuarios)
+                {
+                    <option value="@usuario.Id">@usuario.Nombre @usuario.Apellido — @usuario.Rol</option>
+                }
+            </select>
         </div>
         <div class="mb-3">
-            <label class="form-label">ID del Recurso Bibliografico</label>
-            <input type="number" name="recursoId" class="form-control" required />
+            <label class="form-label">Recurso Bibliográfico</label>
+            <select name="recursoId" class="form-select" required>
+                <option value="">-- Selecciona un recurso --</option>
+                @foreach (var recurso in ViewBag.Recursos)
+                {
+                    <option value="@recurso.Id">@recurso.Titulo — @recurso.Autor (@recurso.CantidadDisponible disponibles)</option>
+                }
+            </select>
         </div>
         <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn-sigebi">Solicitar</button>
+            <button type="submit" class="btn-sigebi">Solicitar Préstamo</button>
             <a asp-action="Index" class="btn-outline-sigebi">Cancelar</a>
         </div>
     </form>

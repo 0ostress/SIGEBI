@@ -8,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // === Controladores ===
 builder.Services.AddControllers();
 
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
+
 // === Swagger ===
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

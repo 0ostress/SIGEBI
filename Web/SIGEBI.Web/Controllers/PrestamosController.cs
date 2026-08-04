@@ -6,10 +6,17 @@ namespace SIGEBI.Web.Controllers
     public class PrestamosController : Controller
     {
         private readonly PrestamoApiService _prestamoApiService;
+        private readonly UsuarioApiService _usuarioApiService;
+        private readonly RecursoApiService _recursoApiService;
 
-        public PrestamosController(PrestamoApiService prestamoApiService)
+        public PrestamosController(
+            PrestamoApiService prestamoApiService,
+            UsuarioApiService usuarioApiService,
+            RecursoApiService recursoApiService)
         {
             _prestamoApiService = prestamoApiService;
+            _usuarioApiService = usuarioApiService;
+            _recursoApiService = recursoApiService;
         }
 
         public async Task<IActionResult> Index()
@@ -24,8 +31,10 @@ namespace SIGEBI.Web.Controllers
             return View(prestamos);
         }
 
-        public IActionResult Solicitar()
+        public async Task<IActionResult> Solicitar()
         {
+            ViewBag.Usuarios = await _usuarioApiService.ObtenerTodosAsync();
+            ViewBag.Recursos = await _recursoApiService.ObtenerDisponiblesAsync();
             return View();
         }
 
@@ -39,6 +48,8 @@ namespace SIGEBI.Web.Controllers
                 return RedirectToAction("Index");
             }
             TempData["Error"] = mensaje;
+            ViewBag.Usuarios = await _usuarioApiService.ObtenerTodosAsync();
+            ViewBag.Recursos = await _recursoApiService.ObtenerDisponiblesAsync();
             return View();
         }
 

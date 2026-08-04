@@ -1,0 +1,61 @@
+@model IEnumerable<SIGEBI.Business.DTOs.RecursoDTO>
+
+@{
+    ViewData["Title"] = "Recursos Bibliográficos";
+}
+
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Catálogo Bibliográfico</h2>
+            <p class="descripcion">
+                Gestiona el inventario completo de recursos bibliográficos de la biblioteca. 
+                Aquí puedes registrar nuevos libros, consultar disponibilidad y administrar el catálogo.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Disponibles" class="btn-outline-sigebi">Ver Disponibles</a>
+            <a asp-action="Crear" class="btn-sigebi">+ Nuevo Recurso</a>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Disponibles</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recurso in Model)
+            {
+                <tr>
+                    <td>@recurso.Titulo</td>
+                    <td>@recurso.Autor</td>
+                    <td>@recurso.Categoria</td>
+                    <td>
+                        <span class="@(recurso.Estado == "Disponible" ? "badge-activo" : recurso.Estado == "Prestado" ? "badge-vencido" : "badge-inactivo")">
+                            @recurso.Estado
+                        </span>
+                    </td>
+                    <td>@recurso.CantidadTotal</td>
+                    <td>@recurso.CantidadDisponible</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Editar" asp-route-id="@recurso.Id" class="btn-outline-sigebi">Editar</a>
+                            <form method="post" asp-action="Eliminar" style="display:inline">
+                                <input type="hidden" name="id" value="@recurso.Id" />
+                                <button type="submit" class="btn-danger-sigebi">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

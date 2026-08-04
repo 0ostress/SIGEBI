@@ -16,6 +16,7 @@ builder.Services.AddHttpClient("SigebiAPI", client =>
 builder.Services.AddScoped<UsuarioApiService>();
 builder.Services.AddScoped<PrestamoApiService>();
 builder.Services.AddScoped<PenalizacionApiService>();
+builder.Services.AddScoped<RecursoApiService>();
 
 builder.Services.AddDbContext<SigebiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

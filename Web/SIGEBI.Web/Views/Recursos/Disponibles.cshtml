@@ -1,0 +1,46 @@
+@model IEnumerable<SIGEBI.Business.DTOs.RecursoDTO>
+
+@{
+    ViewData["Title"] = "Recursos Disponibles";
+}
+
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Recursos Disponibles</h2>
+            <p class="descripcion">
+                Recursos bibliográficos con ejemplares disponibles para préstamo. 
+                Selecciona un recurso y solicita un préstamo desde la sección de Préstamos.
+            </p>
+        </div>
+        <a asp-action="Index" class="btn-outline-sigebi">Ver Todos</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Categoría</th>
+                <th>Ejemplares Disponibles</th>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recurso in Model)
+            {
+                <tr>
+                    <td>@recurso.Titulo</td>
+                    <td>@recurso.Autor</td>
+                    <td>@recurso.Categoria</td>
+                    <td>
+                        <span class="badge-activo">@recurso.CantidadDisponible disponibles</span>
+                    </td>
+                    <td>
+                        <span style="color: #7c3aed; font-weight: 600;">ID: @recurso.Id</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,29 +1,63 @@
 @model IEnumerable<SIGEBI.Business.DTOs.PenalizacionDTO>
 
-<h2>Penalizaciones</h2>
+@{
+    ViewData["Title"] = "Penalizaciones";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Usuario</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Fecha Aplicación</th>
-            <th>Fecha Resolución</th>
-            <th>Descripción</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var penalizacion in Model)
-        {
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Gestion de Penalizaciones</h2>
+            <p class="descripcion">
+                Administra las penalizaciones del sistema. Las penalizaciones se generan automaticamente 
+                cuando un usuario devuelve un recurso tarde o cuando un prestamo vence sin devolucion. 
+                Una vez resuelta la sancion, el usuario puede volver a solicitar prestamos.
+            </p>
+        </div>
+        <a asp-action="Activas" class="btn-outline-sigebi">Ver Solo Activas</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>@penalizacion.NombreUsuario</td>
-                <td>@penalizacion.Tipo</td>
-                <td>@penalizacion.Estado</td>
-                <td>@penalizacion.FechaAplicacion.ToShortDateString()</td>
-                <td>@penalizacion.FechaResolucion.ToShortDateString()</td>
-                <td>@penalizacion.Descripcion</td>
+                <th>Usuario</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Fecha Aplicacion</th>
+                <th>Fecha Resolucion</th>
+                <th>Descripcion</th>
+                <th>Accion</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var penalizacion in Model)
+            {
+                <tr>
+                    <td>@penalizacion.NombreUsuario</td>
+                    <td>@penalizacion.Tipo</td>
+                    <td>
+                        <span class="@(penalizacion.Estado == "Activa" ? "badge-vencido" : "badge-activo")">
+                            @penalizacion.Estado
+                        </span>
+                    </td>
+                    <td>@penalizacion.FechaAplicacion.ToShortDateString()</td>
+                    <td>@penalizacion.FechaResolucion.ToShortDateString()</td>
+                    <td>@penalizacion.Descripcion</td>
+                    <td>
+                        @if (penalizacion.Estado == "Activa")
+                        {
+                            <form method="post" asp-action="Resolver" style="display:inline">
+                                <input type="hidden" name="penalizacionId" value="@penalizacion.Id" />
+                                <button type="submit" class="btn-sigebi">Resolver</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge-activo">Resuelta</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

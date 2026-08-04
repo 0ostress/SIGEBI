@@ -1,50 +1,266 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SIGEBI.Web</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - SIGEBI</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SIGEBI.Web.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --secondary: #2563eb;
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-nav: #16213e;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #2d2d4e;
+            --gradient: linear-gradient(135deg, #7c3aed, #2563eb);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--bg-nav) !important;
+            border-bottom: 1px solid var(--border) !important;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-light) !important;
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        /* CONTENEDOR */
+        .container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        /* CARDS */
+        .sigebi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        .sigebi-card h2 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .sigebi-card .descripcion {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* TABLAS */
+        .table {
+            color: var(--text-light) !important;
+            border-color: var(--border) !important;
+        }
+
+        .table thead th {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--text-light);
+            border-color: var(--border) !important;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            border-color: var(--border) !important;
+            padding: 0.875rem 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(124, 58, 237, 0.08);
+        }
+
+        /* BOTONES */
+        .btn-sigebi {
+            background: var(--gradient);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-sigebi:hover {
+            opacity: 0.85;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-outline-sigebi {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline-sigebi:hover {
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--text-light);
+        }
+
+        .btn-danger-sigebi {
+            background: linear-gradient(135deg, #dc2626, #9f1239);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* FORMULARIOS */
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-light) !important;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
+            outline: none;
+        }
+
+        .form-label {
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+
+        /* BADGES */
+        .badge-activo { background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+        .badge-inactivo { background: rgba(100, 116, 139, 0.2); color: #94a3b8; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+        .badge-vencido { background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+        .badge-devuelto { background: rgba(59, 130, 246, 0.2); color: #3b82f6; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+
+        /* FOOTER */
+        footer {
+            background: var(--bg-nav) !important;
+            border-top: 1px solid var(--border) !important;
+            color: var(--text-muted) !important;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        footer a { color: var(--primary) !important; text-decoration: none; }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIGEBI.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">📚 SIGEBI</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
+
+@if (TempData["Exito"] != null)
+{
+    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+        ✓ @TempData["Exito"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+        ✗ @TempData["Error"]
+    </div>
+}
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer>
         <div class="container">
-            &copy; 2026 - SIGEBI.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - SIGEBI — Sistema de Gestión de Bibliotecas Institucional
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

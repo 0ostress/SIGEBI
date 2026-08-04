@@ -32,16 +32,25 @@ namespace SIGEBI.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Solicitar(int usuarioId, int recursoId)
         {
-            var resultado = await _prestamoApiService.SolicitarPrestamoAsync(usuarioId, recursoId);
-            if (resultado)
+            var (exito, mensaje) = await _prestamoApiService.SolicitarPrestamoAsync(usuarioId, recursoId);
+            if (exito)
+            {
+                TempData["Exito"] = mensaje;
                 return RedirectToAction("Index");
+            }
+            TempData["Error"] = mensaje;
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Devolver(int prestamoId)
         {
-            await _prestamoApiService.RegistrarDevolucionAsync(prestamoId);
+            var (exito, mensaje) = await _prestamoApiService.RegistrarDevolucionAsync(prestamoId);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
             return RedirectToAction("Index");
         }
     }

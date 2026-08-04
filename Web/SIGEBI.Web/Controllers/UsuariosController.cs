@@ -22,6 +22,11 @@ namespace SIGEBI.Web.Controllers
         public async Task<IActionResult> Detalle(int id)
         {
             var usuario = await _usuarioApiService.ObtenerPorIdAsync(id);
+            if (usuario == null)
+            {
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction("Index");
+            }
             return View(usuario);
         }
 
@@ -33,24 +38,37 @@ namespace SIGEBI.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear(UsuarioDTO usuarioDto)
         {
-            var resultado = await _usuarioApiService.RegistrarAsync(usuarioDto);
-            if (resultado)
+            var (exito, mensaje) = await _usuarioApiService.RegistrarAsync(usuarioDto);
+            if (exito)
+            {
+                TempData["Exito"] = mensaje;
                 return RedirectToAction("Index");
+            }
+            TempData["Error"] = mensaje;
             return View(usuarioDto);
         }
 
         public async Task<IActionResult> Editar(int id)
         {
             var usuario = await _usuarioApiService.ObtenerPorIdAsync(id);
+            if (usuario == null)
+            {
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction("Index");
+            }
             return View(usuario);
         }
 
         [HttpPost]
         public async Task<IActionResult> Editar(int id, UsuarioDTO usuarioDto)
         {
-            var resultado = await _usuarioApiService.ActualizarAsync(id, usuarioDto);
-            if (resultado)
+            var (exito, mensaje) = await _usuarioApiService.ActualizarAsync(id, usuarioDto);
+            if (exito)
+            {
+                TempData["Exito"] = mensaje;
                 return RedirectToAction("Index");
+            }
+            TempData["Error"] = mensaje;
             return View(usuarioDto);
         }
     }

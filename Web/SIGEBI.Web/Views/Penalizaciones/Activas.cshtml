@@ -1,0 +1,49 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PenalizacionDTO>
+
+@{
+    ViewData["Title"] = "Penalizaciones Activas";
+}
+
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Penalizaciones Activas</h2>
+            <p class="descripcion">
+                Listado de usuarios con sanciones activas en el sistema. 
+                Estos usuarios no pueden solicitar nuevos prestamos hasta que su penalizacion sea resuelta.
+            </p>
+        </div>
+        <a asp-action="Index" class="btn-outline-sigebi">Ver Todas</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Tipo</th>
+                <th>Fecha Aplicacion</th>
+                <th>Fecha Resolucion</th>
+                <th>Descripcion</th>
+                <th>Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var penalizacion in Model)
+            {
+                <tr>
+                    <td>@penalizacion.NombreUsuario</td>
+                    <td>@penalizacion.Tipo</td>
+                    <td>@penalizacion.FechaAplicacion.ToShortDateString()</td>
+                    <td>@penalizacion.FechaResolucion.ToShortDateString()</td>
+                    <td>@penalizacion.Descripcion</td>
+                    <td>
+                        <form method="post" asp-action="Resolver" style="display:inline">
+                            <input type="hidden" name="penalizacionId" value="@penalizacion.Id" />
+                            <button type="submit" class="btn-sigebi">Resolver</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

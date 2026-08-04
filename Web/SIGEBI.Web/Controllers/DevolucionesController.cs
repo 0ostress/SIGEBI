@@ -21,7 +21,12 @@ namespace SIGEBI.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Registrar(int prestamoId)
         {
-            await _prestamoApiService.RegistrarDevolucionAsync(prestamoId);
+            var (exito, mensaje) = await _prestamoApiService.RegistrarDevolucionAsync(prestamoId);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
             return RedirectToAction("Index");
         }
     }

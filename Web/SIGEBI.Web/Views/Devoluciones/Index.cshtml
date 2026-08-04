@@ -1,32 +1,56 @@
 @model IEnumerable<SIGEBI.Business.DTOs.PrestamoDTO>
 
-<h2>Devoluciones Pendientes</h2>
+@{
+    ViewData["Title"] = "Devoluciones";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Usuario</th>
-            <th>Recurso</th>
-            <th>Fecha Vencimiento</th>
-            <th>Estado</th>
-            <th>Acción</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var prestamo in Model)
-        {
+<div class="sigebi-card">
+    <h2>Registro de Devoluciones</h2>
+    <p class="descripcion">
+        Gestiona las devoluciones de recursos bibliográficos. Al registrar una devolución, 
+        el sistema actualizará automáticamente la disponibilidad del recurso y evaluará 
+        si aplica una penalización por retraso en la entrega.
+    </p>
+
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>@prestamo.NombreUsuario</td>
-                <td>@prestamo.TituloRecurso</td>
-                <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
-                <td>@prestamo.Estado</td>
-                <td>
-                    <form method="post" asp-action="Registrar">
-                        <input type="hidden" name="prestamoId" value="@prestamo.Id" />
-                        <button type="submit" class="btn btn-primary">Registrar Devolución</button>
-                    </form>
-                </td>
+                <th>Usuario</th>
+                <th>Recurso</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Vencimiento</th>
+                <th>Estado</th>
+                <th>Accion</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var prestamo in Model)
+            {
+                <tr>
+                    <td>@prestamo.NombreUsuario</td>
+                    <td>@prestamo.TituloRecurso</td>
+                    <td>@prestamo.FechaInicio.ToShortDateString()</td>
+                    <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                    <td>
+                        <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" ? "badge-vencido" : "badge-devuelto")">
+                            @prestamo.Estado
+                        </span>
+                    </td>
+                    <td>
+                        @if (prestamo.Estado == "Activo")
+                        {
+                            <form method="post" asp-action="Registrar" style="display:inline">
+                                <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                <button type="submit" class="btn-sigebi">Registrar Devolucion</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge-devuelto">Completado</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -27,14 +27,24 @@ namespace SIGEBI.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Aplicar(int prestamoId)
         {
-            await _penalizacionApiService.AplicarPenalizacionAsync(prestamoId);
+            var (exito, mensaje) = await _penalizacionApiService.AplicarPenalizacionAsync(prestamoId);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> Resolver(int penalizacionId)
         {
-            await _penalizacionApiService.ResolverPenalizacionAsync(penalizacionId);
+            var (exito, mensaje) = await _penalizacionApiService.ResolverPenalizacionAsync(penalizacionId);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
             return RedirectToAction("Index");
         }
     }

@@ -1,27 +1,56 @@
 @model IEnumerable<SIGEBI.Business.DTOs.PrestamoDTO>
 
-<h2>Préstamos del Sistema</h2>
+@{
+    ViewData["Title"] = "Préstamos";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Usuario</th>
-            <th>Recurso</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Vencimiento</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var prestamo in Model)
-        {
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Gestión de Préstamos</h2>
+            <p class="descripcion">
+                Consulta y gestiona todos los préstamos activos y el historial del sistema. 
+                Desde aquí puedes solicitar nuevos préstamos y registrar devoluciones.
+            </p>
+        </div>
+        <a asp-action="Solicitar" class="btn-sigebi">+ Solicitar Préstamo</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>@prestamo.NombreUsuario</td>
-                <td>@prestamo.TituloRecurso</td>
-                <td>@prestamo.FechaInicio.ToShortDateString()</td>
-                <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
-                <td>@prestamo.Estado</td>
+                <th>Usuario</th>
+                <th>Recurso</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Vencimiento</th>
+                <th>Estado</th>
+                <th>Acciones</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var prestamo in Model)
+            {
+                <tr>
+                    <td>@prestamo.NombreUsuario</td>
+                    <td>@prestamo.TituloRecurso</td>
+                    <td>@prestamo.FechaInicio.ToShortDateString()</td>
+                    <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                    <td>
+                        <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" ? "badge-vencido" : "badge-devuelto")">
+                            @prestamo.Estado
+                        </span>
+                    </td>
+                    <td>
+                        @if (prestamo.Estado == "Activo")
+                        {
+                            <form method="post" asp-controller="Devoluciones" asp-action="Registrar" style="display:inline">
+                                <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                <button type="submit" class="btn-outline-sigebi">Devolver</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

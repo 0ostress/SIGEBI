@@ -14,30 +14,83 @@ namespace SIGEBI.Web.Services
 
         public async Task<IEnumerable<PrestamoDTO>> ObtenerTodosAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<PrestamoDTO>>("api/Prestamos");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<PrestamoDTO>>("api/Prestamos")
+                       ?? Enumerable.Empty<PrestamoDTO>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<PrestamoDTO>();
+            }
         }
 
-        public async Task<PrestamoDTO> ObtenerPorIdAsync(int id)
+        public async Task<PrestamoDTO?> ObtenerPorIdAsync(int id)
         {
-            return await _httpClient.GetFromJsonAsync<PrestamoDTO>($"api/Prestamos/{id}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<PrestamoDTO>($"api/Prestamos/{id}");
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public async Task<IEnumerable<PrestamoDTO>> ObtenerPorUsuarioAsync(int usuarioId)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<PrestamoDTO>>($"api/Prestamos/usuario/{usuarioId}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<PrestamoDTO>>($"api/Prestamos/usuario/{usuarioId}")
+                       ?? Enumerable.Empty<PrestamoDTO>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<PrestamoDTO>();
+            }
         }
 
-        public async Task<bool> SolicitarPrestamoAsync(int usuarioId, int recursoId)
+        public async Task<(bool Exito, string Mensaje)> SolicitarPrestamoAsync(int usuarioId, int recursoId)
         {
-            var request = new { UsuarioId = usuarioId, RecursoId = recursoId };
-            var response = await _httpClient.PostAsJsonAsync("api/Prestamos/solicitar", request);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var request = new { UsuarioId = usuarioId, RecursoId = recursoId };
+                var response = await _httpClient.PostAsJsonAsync("api/Prestamos/solicitar", request);
+                if (response.IsSuccessStatusCode)
+                    return (true, "Prestamo solicitado exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al solicitar el prestamo.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor. Verifique que la API este en ejecucion.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
         }
 
-        public async Task<bool> RegistrarDevolucionAsync(int prestamoId)
+        public async Task<(bool Exito, string Mensaje)> RegistrarDevolucionAsync(int prestamoId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"api/Prestamos/devolver/{prestamoId}", new { });
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/Prestamos/devolver/{prestamoId}", new { });
+                if (response.IsSuccessStatusCode)
+                    return (true, "Devolucion registrada exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al registrar la devolucion.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor. Verifique que la API este en ejecucion.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
         }
     }
 }

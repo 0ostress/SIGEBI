@@ -1,27 +1,50 @@
 @model IEnumerable<SIGEBI.Business.DTOs.UsuarioDTO>
 
-<h2>Usuarios del Sistema</h2>
+@{
+    ViewData["Title"] = "Usuarios";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var usuario in Model)
-        {
+<div class="sigebi-card">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2>Gestión de Usuarios</h2>
+            <p class="descripcion">
+                Administra los usuarios registrados en el sistema. Aquí puedes consultar estudiantes, 
+                docentes, bibliotecarios y administradores, registrar nuevos usuarios y gestionar su estado de acceso.
+            </p>
+        </div>
+        <a asp-action="Crear" class="btn-sigebi">+ Nuevo Usuario</a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
             <tr>
-                <td>@usuario.Nombre</td>
-                <td>@usuario.Apellido</td>
-                <td>@usuario.Email</td>
-                <td>@usuario.Rol</td>
-                <td>@usuario.Estado</td>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var usuario in Model)
+            {
+                <tr>
+                    <td>@usuario.Nombre @usuario.Apellido</td>
+                    <td>@usuario.Email</td>
+                    <td>@usuario.Rol</td>
+                    <td>
+                        <span class="@(usuario.Estado == "Activo" ? "badge-activo" : usuario.Estado == "Suspendido" ? "badge-vencido" : "badge-inactivo")">
+                            @usuario.Estado
+                        </span>
+                    </td>
+                    <td>@usuario.FechaRegistro.ToShortDateString()</td>
+                    <td>
+                        <a asp-action="Editar" asp-route-id="@usuario.Id" class="btn-outline-sigebi">Editar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

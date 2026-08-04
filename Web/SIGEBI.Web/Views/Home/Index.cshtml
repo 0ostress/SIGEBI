@@ -1,8 +1,24 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="sigebi-card text-center" style="margin-top: 3rem; padding: 4rem 2rem;">
+    <h1 style="font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, #a855f7, #3b82f6, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 0.3rem; text-shadow: none; filter: drop-shadow(0 0 30px rgba(124, 58, 237, 0.5));">
+    SIGEBI
+    </h1>
+    <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 0.5rem;">
+        Sistema de Gestión de Bibliotecas Institucional
+    </p>
+    <hr style="border-color: #2d2d4e; margin: 2rem auto; width: 60%;" />
+    <p style="color: #e2e8f0; font-size: 1rem; max-width: 700px; margin: 0 auto 2rem;">
+        SIGEBI es una plataforma institucional diseñada para digitalizar y centralizar la gestión de la biblioteca del ITLA. 
+        Permite administrar el catálogo bibliográfico, gestionar préstamos y devoluciones de recursos, 
+        aplicar penalizaciones automáticas por retrasos y mantener un registro completo de todas las operaciones realizadas.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a asp-controller="Usuarios" asp-action="Index" class="btn-sigebi">Gestionar Usuarios</a>
+        <a asp-controller="Prestamos" asp-action="Index" class="btn-sigebi">Ver Préstamos</a>
+        <a asp-controller="Devoluciones" asp-action="Index" class="btn-sigebi">Devoluciones</a>
+        <a asp-controller="Penalizaciones" asp-action="Index" class="btn-sigebi">Penalizaciones</a>
+    </div>
 </div>

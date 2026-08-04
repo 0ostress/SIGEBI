@@ -1,0 +1,45 @@
+@model SIGEBI.Business.DTOs.UsuarioDTO
+
+@{
+    ViewData["Title"] = "Nuevo Usuario";
+}
+
+<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Registrar Usuario</h2>
+    <p class="descripcion">
+        Completa el formulario para registrar un nuevo usuario en el sistema. 
+        El correo electrónico debe ser único y la contraseña será almacenada de forma segura.
+    </p>
+
+    <form method="post" asp-action="Crear">
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="Nombre" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <input type="text" name="Apellido" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="Email" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" name="PasswordHash" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select name="Rol" class="form-select">
+                <option value="Estudiante">Estudiante</option>
+                <option value="Docente">Docente</option>
+                <option value="Bibliotecario">Bibliotecario</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn-sigebi">Registrar</button>
+            <a asp-action="Index" class="btn-outline-sigebi">Cancelar</a>
+        </div>
+    </form>
+</div>

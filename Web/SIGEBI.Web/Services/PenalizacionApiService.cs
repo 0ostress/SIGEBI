@@ -14,29 +14,83 @@ namespace SIGEBI.Web.Services
 
         public async Task<IEnumerable<PenalizacionDTO>> ObtenerTodasAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>("api/Penalizaciones");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>("api/Penalizaciones")
+                       ?? Enumerable.Empty<PenalizacionDTO>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<PenalizacionDTO>();
+            }
         }
 
         public async Task<IEnumerable<PenalizacionDTO>> ObtenerActivasAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>("api/Penalizaciones/activas");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>("api/Penalizaciones/activas")
+                       ?? Enumerable.Empty<PenalizacionDTO>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<PenalizacionDTO>();
+            }
         }
 
         public async Task<IEnumerable<PenalizacionDTO>> ObtenerPorUsuarioAsync(int usuarioId)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>($"api/Penalizaciones/usuario/{usuarioId}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<PenalizacionDTO>>($"api/Penalizaciones/usuario/{usuarioId}")
+                       ?? Enumerable.Empty<PenalizacionDTO>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<PenalizacionDTO>();
+            }
         }
 
-        public async Task<bool> AplicarPenalizacionAsync(int prestamoId)
+        public async Task<(bool Exito, string Mensaje)> AplicarPenalizacionAsync(int prestamoId)
         {
-            var response = await _httpClient.PostAsJsonAsync($"api/Penalizaciones/aplicar/{prestamoId}", new { });
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/Penalizaciones/aplicar/{prestamoId}", new { });
+                if (response.IsSuccessStatusCode)
+                    return (true, "Penalizacion aplicada exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al aplicar la penalizacion.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor. Verifique que la API este en ejecucion.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
         }
 
-        public async Task<bool> ResolverPenalizacionAsync(int penalizacionId)
+        public async Task<(bool Exito, string Mensaje)> ResolverPenalizacionAsync(int penalizacionId)
         {
-            var response = await _httpClient.PutAsJsonAsync($"api/Penalizaciones/resolver/{penalizacionId}", new { });
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"api/Penalizaciones/resolver/{penalizacionId}", new { });
+                if (response.IsSuccessStatusCode)
+                    return (true, "Penalizacion resuelta exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al resolver la penalizacion.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor. Verifique que la API este en ejecucion.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
         }
     }
 }

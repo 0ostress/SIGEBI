@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SIGEBI.API.Services;
 using SIGEBI.IOC;
 using SIGEBI.Persistence.Context;
 
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // === Controladores ===
 builder.Services.AddControllers();
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>

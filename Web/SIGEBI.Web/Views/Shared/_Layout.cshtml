@@ -216,37 +216,73 @@ select {
 <body>
     <header>
         <nav class="navbar navbar-expand-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">📚 SIGEBI</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Recursos" asp-action="Index">Recursos</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">📚 SIGEBI</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a>
+                </li>
+                @{
+                    var rol = Context.Session.GetString("Rol");
+                }
+                @if (rol == "Bibliotecario" || rol == "Administrador")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Recursos" asp-action="Index">Recursos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
+                    </li>
+                }
+                else if (rol == "Estudiante" || rol == "Docente")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Recursos" asp-action="Disponibles">Catálogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Prestamos" asp-action="Solicitar">Solicitar Préstamo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Penalizaciones" asp-action="MisPenalizaciones">Mis Penalizaciones</a>
+                    </li>
+<li class="nav-item">
+    <a class="nav-link" asp-controller="Prestamos" asp-action="MisPrestamos">Mis Préstamos</a>
+</li>
+                }
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                @if (Context.Session.GetString("Nombre") != null)
+                {
+                    <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
+                        👤 @Context.Session.GetString("Nombre") — @rol
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
     </header>
 
 

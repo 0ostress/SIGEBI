@@ -36,6 +36,16 @@ namespace SIGEBI.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> MisPenalizaciones()
+        {
+            var usuarioId = HttpContext.Session.GetString("UsuarioId");
+            if (string.IsNullOrEmpty(usuarioId))
+                return RedirectToAction("Login", "Auth");
+
+            var penalizaciones = await _penalizacionApiService.ObtenerPorUsuarioAsync(int.Parse(usuarioId));
+            return View(penalizaciones);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Resolver(int penalizacionId)
         {

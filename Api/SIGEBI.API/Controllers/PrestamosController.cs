@@ -9,13 +9,14 @@ namespace SIGEBI.API.Controllers
     public class PrestamosController : ControllerBase
     {
         private readonly IPrestamoService _prestamoService;
+        private readonly RegistrarDevolucionUseCase _devolucionUseCase;
 
-        public PrestamosController(IPrestamoService prestamoService)
+        public PrestamosController(IPrestamoService prestamoService, RegistrarDevolucionUseCase devolucionUseCase)
         {
             _prestamoService = prestamoService;
+            _devolucionUseCase = devolucionUseCase;
         }
 
-        // GET: api/prestamos
         [HttpGet]
         public async Task<IActionResult> ObtenerTodos()
         {
@@ -23,7 +24,6 @@ namespace SIGEBI.API.Controllers
             return Ok(prestamos);
         }
 
-        // GET: api/prestamos/1
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
@@ -38,7 +38,6 @@ namespace SIGEBI.API.Controllers
             }
         }
 
-        // GET: api/prestamos/usuario/1
         [HttpGet("usuario/{usuarioId}")]
         public async Task<IActionResult> ObtenerPorUsuario(int usuarioId)
         {
@@ -46,7 +45,6 @@ namespace SIGEBI.API.Controllers
             return Ok(prestamos);
         }
 
-        // POST: api/prestamos/solicitar
         [HttpPost("solicitar")]
         public async Task<IActionResult> SolicitarPrestamo([FromBody] SolicitarPrestamoRequest request)
         {
@@ -61,13 +59,12 @@ namespace SIGEBI.API.Controllers
             }
         }
 
-        // POST: api/prestamos/devolver/1
         [HttpPost("devolver/{prestamoId}")]
         public async Task<IActionResult> RegistrarDevolucion(int prestamoId)
         {
             try
             {
-                await _prestamoService.RegistrarDevolucionAsync(prestamoId);
+                await _devolucionUseCase.EjecutarAsync(prestamoId);
                 return NoContent();
             }
             catch (Exception ex)

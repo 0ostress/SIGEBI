@@ -1,0 +1,52 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PenalizacionDTO>
+
+@{
+    ViewData["Title"] = "Mis Penalizaciones";
+    var nombre = Context.Session.GetString("Nombre");
+}
+
+<div class="sigebi-card">
+    <h2>Mis Penalizaciones</h2>
+    <p class="descripcion">
+        Consulta tus penalizaciones activas e historial de sanciones, @nombre. 
+        Mientras tengas una penalización activa no podrás solicitar nuevos préstamos.
+    </p>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 3rem; color: #94a3b8;">
+            <p style="font-size: 1.1rem;">No tienes penalizaciones registradas.</p>
+            <a asp-controller="Prestamos" asp-action="Solicitar" class="btn-sigebi">Solicitar un Préstamo</a>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Fecha Aplicación</th>
+                    <th>Fecha Resolución</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var penalizacion in Model)
+                {
+                    <tr>
+                        <td>@penalizacion.Tipo</td>
+                        <td>
+                            <span class="@(penalizacion.Estado == "Activa" ? "badge-vencido" : "badge-activo")">
+                                @penalizacion.Estado
+                            </span>
+                        </td>
+                        <td>@penalizacion.FechaAplicacion.ToShortDateString()</td>
+                        <td>@penalizacion.FechaResolucion.ToShortDateString()</td>
+                        <td>@penalizacion.Descripcion</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

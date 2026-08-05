@@ -1,26 +1,39 @@
 @{
     ViewData["Title"] = "Solicitar Préstamo";
+    var rol = Context.Session.GetString("Rol");
+    var nombre = Context.Session.GetString("Nombre");
 }
 
 <div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
     <h2>Solicitar Préstamo</h2>
     <p class="descripcion">
-        Selecciona el usuario y el recurso bibliográfico que deseas prestar. 
-        El sistema verificará automáticamente que el usuario esté activo y que 
-        el recurso tenga ejemplares disponibles.
+        Selecciona el recurso bibliográfico que deseas solicitar. 
+        El sistema verificará automáticamente la disponibilidad antes de registrar el préstamo.
     </p>
 
     <form method="post" asp-action="Solicitar">
-        <div class="mb-3">
-            <label class="form-label">Usuario</label>
-            <select name="usuarioId" class="form-select" required>
-                <option value="">-- Selecciona un usuario --</option>
-                @foreach (var usuario in ViewBag.Usuarios)
-                {
-                    <option value="@usuario.Id">@usuario.Nombre @usuario.Apellido — @usuario.Rol</option>
-                }
-            </select>
-        </div>
+        @if (rol == "Bibliotecario")
+        {
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <select name="usuarioId" class="form-select" required>
+                    <option value="">-- Selecciona un usuario --</option>
+                    @foreach (var usuario in ViewBag.Usuarios)
+                    {
+                        <option value="@usuario.Id">@usuario.Nombre @usuario.Apellido — @usuario.Rol</option>
+                    }
+                </select>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" name="usuarioId" value="@ViewBag.UsuarioId" />
+            <div class="mb-3" style="background: rgba(124,58,237,0.1); border: 1px solid #2d2d4e; border-radius: 8px; padding: 1rem;">
+                <p style="color: #94a3b8; margin: 0; font-size: 0.9rem;">Solicitando como:</p>
+                <p style="color: #e2e8f0; margin: 0; font-weight: 600;">@nombre</p>
+            </div>
+        }
+
         <div class="mb-3">
             <label class="form-label">Recurso Bibliográfico</label>
             <select name="recursoId" class="form-select" required>

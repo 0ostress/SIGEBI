@@ -35,7 +35,18 @@ namespace SIGEBI.Web.Controllers
         {
             ViewBag.Usuarios = await _usuarioApiService.ObtenerTodosAsync();
             ViewBag.Recursos = await _recursoApiService.ObtenerDisponiblesAsync();
+            ViewBag.UsuarioId = HttpContext.Session.GetString("UsuarioId");
             return View();
+        }
+
+        public async Task<IActionResult> MisPrestamos()
+        {
+            var usuarioId = HttpContext.Session.GetString("UsuarioId");
+            if (string.IsNullOrEmpty(usuarioId))
+                return RedirectToAction("Login", "Auth");
+
+            var prestamos = await _prestamoApiService.ObtenerPorUsuarioAsync(int.Parse(usuarioId));
+            return View(prestamos);
         }
 
         [HttpPost]
@@ -50,6 +61,7 @@ namespace SIGEBI.Web.Controllers
             TempData["Error"] = mensaje;
             ViewBag.Usuarios = await _usuarioApiService.ObtenerTodosAsync();
             ViewBag.Recursos = await _recursoApiService.ObtenerDisponiblesAsync();
+            ViewBag.UsuarioId = HttpContext.Session.GetString("UsuarioId");
             return View();
         }
 
@@ -61,7 +73,6 @@ namespace SIGEBI.Web.Controllers
                 TempData["Exito"] = mensaje;
             else
                 TempData["Error"] = mensaje;
-
             return RedirectToAction("Index");
         }
     }

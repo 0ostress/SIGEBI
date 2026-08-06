@@ -71,5 +71,30 @@ namespace SIGEBI.Web.Controllers
             TempData["Error"] = mensaje;
             return View(usuarioDto);
         }
+
+        public IActionResult CrearPrivilegiado()
+        {
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+                return RedirectToAction("Index", "Home");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CrearPrivilegiado(UsuarioDTO usuarioDto)
+        {
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+                return RedirectToAction("Index", "Home");
+
+            var (exito, mensaje) = await _usuarioApiService.RegistrarAsync(usuarioDto);
+            if (exito)
+            {
+                TempData["Exito"] = mensaje;
+                return RedirectToAction("Index");
+            }
+            TempData["Error"] = mensaje;
+            return View(usuarioDto);
+        }
     }
 }

@@ -1,0 +1,43 @@
+@model SIGEBI.Business.DTOs.UsuarioDTO
+
+@{
+    ViewData["Title"] = "Crear Usuario Privilegiado";
+}
+
+<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Crear Bibliotecario o Administrador</h2>
+    <p class="descripcion">
+        Solo los administradores pueden crear cuentas de Bibliotecario y Administrador. 
+        Estos usuarios tendrán acceso completo o parcial al sistema según su rol.
+    </p>
+
+    <form method="post" asp-action="CrearPrivilegiado">
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="Nombre" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <input type="text" name="Apellido" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="Email" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" name="PasswordHash" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <select name="Rol" class="form-select">
+                <option value="Bibliotecario">Bibliotecario</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+        </div>
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn-sigebi">Crear Usuario</button>
+            <a asp-action="Index" class="btn-outline-sigebi">Cancelar</a>
+        </div>
+    </form>
+</div>

@@ -100,11 +100,12 @@ namespace SIGEBI.Web.Services
                 if (response.IsSuccessStatusCode)
                     return (true, "Recurso eliminado exitosamente.");
 
-                return (false, "Error al eliminar el recurso.");
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al eliminar el recurso.");
             }
             catch (HttpRequestException)
             {
-                return (false, "No se pudo conectar con el servidor. Verifique que la API este en ejecucion.");
+                return (false, "No se pudo conectar con el servidor.");
             }
             catch (Exception ex)
             {

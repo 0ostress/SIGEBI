@@ -90,6 +90,11 @@ namespace SIGEBI.Business.UseCases
             var recurso = await _recursoRepository.GetByIdAsync(id);
             if (recurso is null) return false;
 
+            // Verificar que no tenga prestamos activos
+            var prestamosActivos = recurso.Prestamos?.Any(p => p.Estado == "Activo" || p.Estado == "Pendiente");
+            if (prestamosActivos == true)
+                throw new Exception("No se puede eliminar un recurso con prestamos activos o pendientes.");
+
             await _recursoRepository.DeleteAsync(id);
             return true;
         }

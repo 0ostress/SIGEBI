@@ -13,7 +13,13 @@
                 docentes, bibliotecarios y administradores, registrar nuevos usuarios y gestionar su estado de acceso.
             </p>
         </div>
-        <a asp-action="Crear" class="btn-sigebi">+ Nuevo Usuario</a>
+        <div class="d-flex gap-2">
+    <a asp-action="Crear" class="btn-sigebi">+ Nuevo Usuario</a>
+    @if (Context.Session.GetString("Rol") == "Administrador")
+    {
+        <a asp-action="CrearPrivilegiado" class="btn-outline-sigebi">+ Crear Bibliotecario/Admin</a>
+    }
+</div>
     </div>
 
     <table class="table table-hover">

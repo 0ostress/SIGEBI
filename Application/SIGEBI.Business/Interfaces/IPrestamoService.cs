@@ -10,5 +10,7 @@ namespace SIGEBI.Business.Interfaces
         Task<PrestamoDTO> SolicitarPrestamoAsync(int usuarioId, int recursoId);
         Task RegistrarDevolucionAsync(int prestamoId);
         Task<bool> AprobarPrestamoAsync(int prestamoId, DateTime fechaVencimiento);
+
+        Task NotificarVencimientosProximosAsync();
     }
 }

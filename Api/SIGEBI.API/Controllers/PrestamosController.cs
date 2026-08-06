@@ -77,6 +77,21 @@ namespace SIGEBI.API.Controllers
             }
         }
 
+        // POST: api/prestamos/notificar-vencimientos
+        [HttpPost("notificar-vencimientos")]
+        public async Task<IActionResult> NotificarVencimientos()
+        {
+            try
+            {
+                await _prestamoService.NotificarVencimientosProximosAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
 
 
 

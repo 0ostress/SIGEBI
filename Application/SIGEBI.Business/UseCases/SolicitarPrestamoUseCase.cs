@@ -117,6 +117,29 @@ namespace SIGEBI.Business.UseCases
             throw new NotImplementedException("Este metodo se implementa en RegistrarDevolucionUseCase.");
         }
 
+        public async Task NotificarVencimientosProximosAsync()
+        {
+            var todosPrestamos = await _prestamoRepository.GetAllAsync();
+            var proximos = todosPrestamos.Where(p =>
+                p.Estado == "Activo" &&
+                p.FechaVencimiento.Date == DateTime.Now.AddDays(2).Date);
+
+            foreach (var prestamo in proximos)
+            {
+                var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
+                var notificacion = new Notificacion
+                {
+                    UsuarioId = prestamo.UsuarioId,
+                    Tipo = "VencimientoProximo",
+                    Mensaje = $"Tu prestamo del libro '{recurso?.Titulo}' vence en 2 dias, el {prestamo.FechaVencimiento.ToShortDateString()}. Por favor devuelvelo a tiempo para evitar penalizaciones.",
+                    Leida = false,
+                    FechaCreacion = DateTime.Now
+                };
+
+                await _notificacionRepository.AddAsync(notificacion);
+            }
+        }
+
         private PrestamoDTO MapToDTO(Prestamo p)
         {
             return new PrestamoDTO

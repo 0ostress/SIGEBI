@@ -7,10 +7,12 @@ namespace SIGEBI.Web.Controllers
     public class AuthController : Controller
     {
         private readonly AuthApiService _authApiService;
+        private readonly PrestamoApiService _prestamoApiService;
 
-        public AuthController(AuthApiService authApiService)
+        public AuthController(AuthApiService authApiService, PrestamoApiService prestamoApiService)
         {
             _authApiService = authApiService;
+            _prestamoApiService = prestamoApiService;
         }
 
         public IActionResult Login()
@@ -30,6 +32,11 @@ namespace SIGEBI.Web.Controllers
                 HttpContext.Session.SetString("Rol", rol);
                 HttpContext.Session.SetString("Nombre", nombre);
                 HttpContext.Session.SetString("UsuarioId", partes[0]);
+
+                // Si es bibliotecario o admin, verificar vencimientos al iniciar sesion
+                if (rol == "Bibliotecario" || rol == "Administrador")
+                    await _prestamoApiService.NotificarVencimientosAsync();
+
                 return RedirectToAction("Index", "Home");
             }
 

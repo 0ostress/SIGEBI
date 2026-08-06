@@ -50,6 +50,15 @@ namespace SIGEBI.Web.Services
             }
         }
 
+        public async Task NotificarVencimientosAsync()
+        {
+            try
+            {
+                await _httpClient.PostAsJsonAsync("api/Prestamos/notificar-vencimientos", new { });
+            }
+            catch (Exception) { }
+        }
+
         public async Task<(bool Exito, string Mensaje)> SolicitarPrestamoAsync(int usuarioId, int recursoId)
         {
             try

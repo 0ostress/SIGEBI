@@ -24,6 +24,7 @@ builder.Services.AddScoped<PenalizacionApiService>();
 builder.Services.AddScoped<RecursoApiService>();
 builder.Services.AddScoped<AuthApiService>();
 builder.Services.AddScoped<NotificacionApiService>();
+builder.Services.AddScoped<ReporteApiService>();
 
 builder.Services.AddSession(options =>
 {
@@ -87,7 +88,10 @@ app.Use(async (context, next) =>
     }
 
     await next();
+
+
 });
+
 
 
 
@@ -97,5 +101,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();

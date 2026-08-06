@@ -1,0 +1,80 @@
+@model SIGEBI.Web.Services.ReporteDTO
+
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="sigebi-card">
+    <h2>Reportes del Sistema</h2>
+    <p class="descripcion">
+        Panel de estadísticas y métricas del sistema SIGEBI. 
+        Aquí puedes monitorear el estado general de la biblioteca.
+    </p>
+
+    <!-- Estadísticas principales -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <div style="background: rgba(124,58,237,0.1); border: 1px solid #7c3aed; border-radius: 12px; padding: 1.5rem; text-align: center;">
+            <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Préstamos Activos</p>
+            <p style="color: #a855f7; font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">@Model.TotalPrestamosActivos</p>
+        </div>
+
+        <div style="background: rgba(37,99,235,0.1); border: 1px solid #2563eb; border-radius: 12px; padding: 1.5rem; text-align: center;">
+            <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Préstamos Pendientes</p>
+            <p style="color: #3b82f6; font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">@Model.TotalPrestamosPendientes</p>
+        </div>
+
+        <div style="background: rgba(16,185,129,0.1); border: 1px solid #10b981; border-radius: 12px; padding: 1.5rem; text-align: center;">
+            <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Recursos Disponibles</p>
+            <p style="color: #10b981; font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">@Model.TotalRecursosDisponibles</p>
+        </div>
+
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid #ef4444; border-radius: 12px; padding: 1.5rem; text-align: center;">
+            <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Usuarios con Penalizaciones</p>
+            <p style="color: #ef4444; font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">@Model.UsuariosConPenalizaciones</p>
+        </div>
+
+    </div>
+
+    <!-- Recursos más prestados -->
+    <h2>Recursos Más Prestados</h2>
+    <p class="descripcion">Top 5 recursos bibliográficos con mayor demanda.</p>
+
+    @if (Model.RecursosMasPrestados == null || !Model.RecursosMasPrestados.Any())
+    {
+        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+            <p>No hay datos de préstamos aún.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Total Préstamos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.RecursosMasPrestados.Count; i++)
+                {
+                    var recurso = Model.RecursosMasPrestados[i];
+                    <tr>
+                        <td>
+                            <span style="background: linear-gradient(135deg, #7c3aed, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">
+                                #@(i + 1)
+                            </span>
+                        </td>
+                        <td>@recurso.Titulo</td>
+                        <td>@recurso.Autor</td>
+                        <td>
+                            <span class="badge-activo">@recurso.TotalPrestamos préstamos</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

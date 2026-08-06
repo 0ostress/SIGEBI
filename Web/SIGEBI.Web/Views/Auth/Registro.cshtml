@@ -89,6 +89,8 @@
         .login-link { color: #7c3aed; text-decoration: none; }
         .login-link:hover { color: #a855f7; }
         select option { background-color: #1a1a2e; color: #e2e8f0; }
+
+
     </style>
 </head>
 <body>
@@ -106,32 +108,32 @@
         }
 
         <form method="post" asp-action="Registro">
-            <div class="mb-3">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Nombre</label>
-                <input type="text" name="Nombre" class="form-control" required />
+                <input type="text" name="Nombre" class="form-control" placeholder="Tu nombre" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Apellido</label>
-                <input type="text" name="Apellido" class="form-control" required />
+                <input type="text" name="Apellido" class="form-control" placeholder="Tu apellido" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Correo Electrónico</label>
                 <input type="email" name="Email" class="form-control" placeholder="correo@itla.edu.do" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Contraseña</label>
-                <input type="password" name="Password" class="form-control" required />
+                <input type="password" name="Password" class="form-control" placeholder="••••••••" required />
             </div>
-            <div class="mb-4">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Rol</label>
-                <select name="Rol" class="form-select">
-<select name="Rol" class="form-select">
-    <option value="Estudiante">Estudiante</option>
-    <option value="Docente">Docente</option>
-</select>
+                <select name="Rol" class="form-select" style="background-color: #1a1a2e !important; color: #e2e8f0 !important; border: 1px solid #2d2d4e !important;">
+                    <option value="Estudiante" style="background-color: #1a1a2e; color: #e2e8f0;">Estudiante</option>
+                    <option value="Docente" style="background-color: #1a1a2e; color: #e2e8f0;">Docente</option>
                 </select>
             </div>
-            <button type="submit" class="btn-register">Crear Cuenta</button>
+            <div class="mt-4">
+                <button type="submit" class="btn-register">Crear Cuenta</button>
+            </div>
         </form>
 
         <div class="text-center mt-3" style="color: #94a3b8; font-size: 0.9rem;">

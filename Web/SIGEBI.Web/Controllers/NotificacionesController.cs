@@ -19,12 +19,15 @@ namespace SIGEBI.Web.Controllers
                 return RedirectToAction("Login", "Auth");
 
             var usuarioId = int.Parse(usuarioIdStr);
-            var notificaciones = await _notificacionApiService.ObtenerNoLeidasAsync(usuarioId);
 
-            foreach (var n in notificaciones)
+            // Marcar no leidas como leidas
+            var noLeidas = await _notificacionApiService.ObtenerNoLeidasAsync(usuarioId);
+            foreach (var n in noLeidas)
                 await _notificacionApiService.MarcarComoLeidaAsync(n.Id);
 
-            return View(notificaciones);
+            // Mostrar todas
+            var todas = await _notificacionApiService.ObtenerTodasAsync(usuarioId);
+            return View(todas);
         }
     }
 }

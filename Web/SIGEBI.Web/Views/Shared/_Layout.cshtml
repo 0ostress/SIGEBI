@@ -285,34 +285,31 @@ else if (rol == "Estudiante" || rol == "Docente")
         <a class="nav-link" asp-controller="Penalizaciones" asp-action="MisPenalizaciones">Mis Penalizaciones</a>
     </li>
 }
-                }
+                
             </ul>
             <ul class="navbar-nav ms-auto align-items-center">
-    @if (Context.Session.GetString("Nombre") != null)
-    {
-        var rolNav = Context.Session.GetString("Rol");
-        if (rolNav == "Estudiante" || rolNav == "Docente")
-        {
-            <li class="nav-item">
-                <a class="nav-link position-relative" asp-controller="Notificaciones" asp-action="Index" style="font-size: 1.2rem;">
-                    🔔
-                    <span id="badge-notif" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
-                </a>
-            </li>
-        }
-        <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
-            👤 @Context.Session.GetString("Nombre") — @Context.Session.GetString("Rol")
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
-        </li>
-    }
+@if (Context.Session.GetString("Nombre") != null)
+{
+    <li class="nav-item">
+        <a class="nav-link position-relative" asp-controller="Notificaciones" asp-action="Index" style="font-size: 1.2rem;">
+            🔔
+            <span id="badge-notif" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
+        </a>
+    </li>
+    <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
+        👤 @Context.Session.GetString("Nombre") — @Context.Session.GetString("Rol")
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
+    </li>
+}
+    
 </ul>
         </div>
     </div>
@@ -354,9 +351,7 @@ else if (rol == "Estudiante" || rol == "Docente")
 <script>
     async function cargarNotificaciones() {
         const usuarioId = '@Context.Session.GetString("UsuarioId")';
-        const rol = '@Context.Session.GetString("Rol")';
-        
-        if (!usuarioId || (rol !== 'Estudiante' && rol !== 'Docente')) return;
+        if (!usuarioId) return;
 
         try {
             const response = await fetch(`http://localhost:5200/api/Notificaciones/noleidas/${usuarioId}`);

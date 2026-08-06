@@ -41,6 +41,26 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Seed: crear Admin por defecto si no existe
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<SigebiContext>();
+    if (!context.Usuarios.Any(u => u.Rol == "Administrador"))
+    {
+        context.Usuarios.Add(new SIGEBI.Domain.Entities.Usuario
+        {
+            Nombre = "Admin",
+            Apellido = "SIGEBI",
+            Email = "admin@sigebi.edu.do",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123*"),
+            Rol = "Administrador",
+            Estado = "Activo",
+            FechaRegistro = DateTime.Now
+        });
+        context.SaveChanges();
+    }
+}
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

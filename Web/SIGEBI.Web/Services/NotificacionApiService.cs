@@ -35,5 +35,18 @@ namespace SIGEBI.Web.Services
             }
             catch (Exception) { }
         }
+
+        public async Task<IEnumerable<Notificacion>> ObtenerTodasAsync(int usuarioId)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<Notificacion>>($"api/Notificaciones/usuario/{usuarioId}")
+                       ?? Enumerable.Empty<Notificacion>();
+            }
+            catch (Exception)
+            {
+                return Enumerable.Empty<Notificacion>();
+            }
+        }
     }
 }

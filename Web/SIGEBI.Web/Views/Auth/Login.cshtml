@@ -47,6 +47,8 @@
             font-size: 0.9rem;
             margin-bottom: 2rem;
         }
+
+
         .form-control {
             background: rgba(255,255,255,0.05) !important;
             border: 1px solid #2d2d4e !important;
@@ -80,6 +82,8 @@
         }
         .register-link { color: #7c3aed; text-decoration: none; }
         .register-link:hover { color: #a855f7; }
+
+
     </style>
 </head>
 <body>
@@ -93,19 +97,24 @@
         }
 
         <form method="post" asp-action="Login">
-            <div class="mb-3">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Correo Electrónico</label>
                 <input type="email" name="Email" class="form-control" placeholder="correo@itla.edu.do" required />
             </div>
-            <div class="mb-4">
+            <div class="mb-4" style="margin-bottom: 1.5rem !important;">
                 <label class="form-label">Contraseña</label>
                 <input type="password" name="Password" class="form-control" placeholder="••••••••" required />
             </div>
-            <button type="submit" class="btn-login">Iniciar Sesión</button>
+            <div class="mt-4">
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+            </div>
         </form>
 
         <div class="text-center mt-3" style="color: #94a3b8; font-size: 0.9rem;">
             ¿No tienes cuenta? <a asp-action="Registro" class="register-link">Regístrate aquí</a>
+        </div>
+        <div class="text-center mt-2" style="color: #64748b; font-size: 0.75rem;">
+            ¿Eres personal administrativo? Contacta al equipo técnico para obtener acceso.
         </div>
     </div>
 

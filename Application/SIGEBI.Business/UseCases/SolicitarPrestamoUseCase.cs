@@ -76,6 +76,22 @@ namespace SIGEBI.Business.UseCases
             };
 
             await _prestamoRepository.AddAsync(nuevoPrestamo);
+            // Notificar a todos los bibliotecarios y admins
+            var todosUsuarios = await _usuarioRepository.GetAllAsync();
+            var bibliotecarios = todosUsuarios.Where(u => u.Rol == "Bibliotecario" || u.Rol == "Administrador");
+
+            foreach (var bibliotecario in bibliotecarios)
+            {
+                var notificacionBibliotecario = new Notificacion
+                {
+                    UsuarioId = bibliotecario.Id,
+                    Tipo = "SolicitudPrestamo",
+                    Mensaje = $"El usuario {usuario.Nombre} {usuario.Apellido} ha solicitado el prestamo del libro '{recurso.Titulo}'. Fecha de solicitud: {DateTime.Now.ToShortDateString()}.",
+                    Leida = false,
+                    FechaCreacion = DateTime.Now
+                };
+                await _notificacionRepository.AddAsync(notificacionBibliotecario);
+            }
             return MapToDTO(nuevoPrestamo);
         }
 

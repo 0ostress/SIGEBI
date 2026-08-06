@@ -25,6 +25,27 @@ namespace SIGEBI.Web.Services
             }
         }
 
+        public async Task<(bool Exito, string Mensaje)> AprobarPrestamoAsync(int prestamoId)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/Prestamos/aprobar/{prestamoId}", new { });
+                if (response.IsSuccessStatusCode)
+                    return (true, "Prestamo aprobado exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al aprobar el prestamo.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
+        }
+
         public async Task<IEnumerable<PenalizacionDTO>> ObtenerActivasAsync()
         {
             try

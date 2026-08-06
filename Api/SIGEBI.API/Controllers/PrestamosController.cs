@@ -59,6 +59,27 @@ namespace SIGEBI.API.Controllers
             }
         }
 
+        // POST: api/prestamos/aprobar/1
+
+        [HttpPost("aprobar/{prestamoId}")]
+        public async Task<IActionResult> AprobarPrestamo(int prestamoId, [FromBody] AprobarPrestamoRequest request)
+        {
+            try
+            {
+                var resultado = await _prestamoService.AprobarPrestamoAsync(prestamoId, request.FechaVencimiento);
+                if (resultado)
+                    return NoContent();
+                return BadRequest(new { mensaje = "No se pudo aprobar el prestamo. Verifique que este pendiente y haya ejemplares disponibles." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
+
+
+
         [HttpPost("devolver/{prestamoId}")]
         public async Task<IActionResult> RegistrarDevolucion(int prestamoId)
         {
@@ -74,9 +95,16 @@ namespace SIGEBI.API.Controllers
         }
     }
 
+    public class AprobarPrestamoRequest
+    {
+        public DateTime FechaVencimiento { get; set; }
+    }
+
     public class SolicitarPrestamoRequest
     {
         public int UsuarioId { get; set; }
         public int RecursoId { get; set; }
     }
+
+
 }

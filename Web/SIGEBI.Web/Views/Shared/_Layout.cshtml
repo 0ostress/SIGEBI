@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using SIGEBI.Domain.Entities
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -229,57 +231,89 @@ select {
                 @{
                     var rol = Context.Session.GetString("Rol");
                 }
-                @if (rol == "Bibliotecario" || rol == "Administrador")
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Recursos" asp-action="Index">Recursos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
-                    </li>
-                }
-                else if (rol == "Estudiante" || rol == "Docente")
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Recursos" asp-action="Disponibles">Catálogo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Prestamos" asp-action="Solicitar">Solicitar Préstamo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Penalizaciones" asp-action="MisPenalizaciones">Mis Penalizaciones</a>
-                    </li>
-<li class="nav-item">
-    <a class="nav-link" asp-controller="Prestamos" asp-action="MisPrestamos">Mis Préstamos</a>
-</li>
+                @if (rol == "Administrador")
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuarios</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Recursos" asp-action="Index">Recursos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="Pendientes">Pendientes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
+    </li>
+}
+else if (rol == "Bibliotecario")
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Recursos" asp-action="Index">Recursos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="Pendientes">Pendientes</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Penalizaciones" asp-action="Index">Penalizaciones</a>
+    </li>
+}
+else if (rol == "Estudiante" || rol == "Docente")
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Recursos" asp-action="Disponibles">Catálogo</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="Solicitar">Solicitar Préstamo</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Prestamos" asp-action="MisPrestamos">Mis Préstamos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Penalizaciones" asp-action="MisPenalizaciones">Mis Penalizaciones</a>
+    </li>
+}
                 }
             </ul>
-            <ul class="navbar-nav ms-auto">
-                @if (Context.Session.GetString("Nombre") != null)
-                {
-                    <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
-                        👤 @Context.Session.GetString("Nombre") — @rol
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
-                    </li>
-                }
-            </ul>
+            <ul class="navbar-nav ms-auto align-items-center">
+    @if (Context.Session.GetString("Nombre") != null)
+    {
+        var rolNav = Context.Session.GetString("Rol");
+        if (rolNav == "Estudiante" || rolNav == "Docente")
+        {
+            <li class="nav-item">
+                <a class="nav-link position-relative" asp-controller="Notificaciones" asp-action="Index" style="font-size: 1.2rem;">
+                    🔔
+                    <span id="badge-notif" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
+                </a>
+            </li>
+        }
+        <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
+            👤 @Context.Session.GetString("Nombre") — @Context.Session.GetString("Rol")
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
+        </li>
+    }
+</ul>
         </div>
     </div>
 </nav>
@@ -315,5 +349,26 @@ select {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+<script>
+    async function cargarNotificaciones() {
+        const usuarioId = '@Context.Session.GetString("UsuarioId")';
+        const rol = '@Context.Session.GetString("Rol")';
+        
+        if (!usuarioId || (rol !== 'Estudiante' && rol !== 'Docente')) return;
+
+        try {
+            const response = await fetch(`http://localhost:5200/api/Notificaciones/noleidas/${usuarioId}`);
+            const notificaciones = await response.json();
+            const badge = document.getElementById('badge-notif');
+            if (badge && notificaciones.length > 0) {
+                badge.style.display = 'inline';
+                badge.textContent = notificaciones.length;
+            }
+        } catch (e) {}
+    }
+    cargarNotificaciones();
+</script>
 </body>
 </html>

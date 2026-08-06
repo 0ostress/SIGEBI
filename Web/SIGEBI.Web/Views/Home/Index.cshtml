@@ -2,6 +2,28 @@
     ViewData["Title"] = "Inicio";
     var rol = Context.Session.GetString("Rol");
     var nombre = Context.Session.GetString("Nombre");
+    var notificaciones = ViewBag.Notificaciones as List<SIGEBI.Domain.Entities.Notificacion> ?? new List<SIGEBI.Domain.Entities.Notificacion>();
+}
+
+@if (notificaciones.Any())
+{
+    <div id="notificaciones-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #1a1a2e; border: 1px solid #7c3aed; border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 0 40px rgba(124,58,237,0.4);">
+            <h3 style="background: linear-gradient(135deg, #a855f7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; margin-bottom: 1rem;">
+                Tienes @notificaciones.Count notificacion(es) nueva(s)
+            </h3>
+            @foreach (var n in notificaciones)
+            {
+                <div style="background: rgba(124,58,237,0.1); border: 1px solid #2d2d4e; border-radius: 10px; padding: 1rem; margin-bottom: 0.8rem;">
+                    <p style="color: #e2e8f0; margin: 0; font-size: 0.95rem;">@n.Mensaje</p>
+                    <p style="color: #94a3b8; margin: 0.3rem 0 0; font-size: 0.8rem;">@n.FechaCreacion.ToShortDateString()</p>
+                </div>
+            }
+            <button onclick="document.getElementById('notificaciones-modal').style.display='none'" class="btn-sigebi" style="width: 100%; margin-top: 1rem;">
+                Entendido
+            </button>
+        </div>
+    </div>
 }
 
 <div class="sigebi-card text-center" style="margin-top: 3rem; padding: 4rem 2rem;">
@@ -17,29 +39,42 @@
         Bienvenido, <strong>@nombre</strong> — <span style="color: #7c3aed;">@rol</span>
     </p>
 
-    @if (rol == "Administrador" || rol == "Bibliotecario")
-    {
-        <p style="color: #94a3b8; max-width: 700px; margin: 0 auto 2rem;">
-            Tienes acceso completo al sistema. Puedes gestionar usuarios, recursos bibliográficos, 
-            préstamos, devoluciones y penalizaciones.
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a asp-controller="Usuarios" asp-action="Index" class="btn-sigebi">Gestionar Usuarios</a>
-            <a asp-controller="Recursos" asp-action="Index" class="btn-sigebi">Gestionar Recursos</a>
-            <a asp-controller="Prestamos" asp-action="Index" class="btn-sigebi">Ver Préstamos</a>
-            <a asp-controller="Devoluciones" asp-action="Index" class="btn-sigebi">Devoluciones</a>
-            <a asp-controller="Penalizaciones" asp-action="Index" class="btn-sigebi">Penalizaciones</a>
-        </div>
-    }
-    else if (rol == "Estudiante" || rol == "Docente")
-    {
-        <p style="color: #94a3b8; max-width: 700px; margin: 0 auto 2rem;">
-            Puedes consultar el catálogo de recursos disponibles, solicitar préstamos 
-            y consultar tus penalizaciones activas.
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a asp-controller="Recursos" asp-action="Disponibles" class="btn-sigebi">Ver Catálogo</a>
-            <a asp-controller="Prestamos" asp-action="Solicitar" class="btn-sigebi">Solicitar Préstamo</a>
-            <a asp-controller="Penalizaciones" asp-action="Index" class="btn-sigebi">Mis Penalizaciones</a>
-        </div>
-    }
+    @if (rol == "Administrador")
+{
+    <p style="color: #94a3b8; max-width: 700px; margin: 0 auto 2rem;">
+        Tienes acceso total al sistema. Puedes gestionar usuarios, recursos, préstamos, devoluciones, penalizaciones y aprobar solicitudes.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a asp-controller="Usuarios" asp-action="Index" class="btn-sigebi">Gestionar Usuarios</a>
+        <a asp-controller="Recursos" asp-action="Index" class="btn-sigebi">Gestionar Recursos</a>
+        <a asp-controller="Prestamos" asp-action="Pendientes" class="btn-sigebi">Aprobar Préstamos</a>
+        <a asp-controller="Devoluciones" asp-action="Index" class="btn-sigebi">Devoluciones</a>
+        <a asp-controller="Penalizaciones" asp-action="Index" class="btn-sigebi">Penalizaciones</a>
+    </div>
+}
+else if (rol == "Bibliotecario")
+{
+    <p style="color: #94a3b8; max-width: 700px; margin: 0 auto 2rem;">
+        Puedes gestionar recursos, aprobar solicitudes de préstamo, registrar devoluciones y administrar penalizaciones.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a asp-controller="Recursos" asp-action="Index" class="btn-sigebi">Gestionar Recursos</a>
+        <a asp-controller="Prestamos" asp-action="Pendientes" class="btn-sigebi">Aprobar Préstamos</a>
+        <a asp-controller="Devoluciones" asp-action="Index" class="btn-sigebi">Devoluciones</a>
+        <a asp-controller="Penalizaciones" asp-action="Index" class="btn-sigebi">Penalizaciones</a>
+    </div>
+}
+else if (rol == "Estudiante" || rol == "Docente")
+{
+    <p style="color: #94a3b8; max-width: 700px; margin: 0 auto 2rem;">
+        Puedes consultar el catálogo de recursos disponibles, solicitar préstamos
+        y consultar tus préstamos y penalizaciones activas.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a asp-controller="Recursos" asp-action="Disponibles" class="btn-sigebi">Ver Catálogo</a>
+        <a asp-controller="Prestamos" asp-action="Solicitar" class="btn-sigebi">Solicitar Préstamo</a>
+        <a asp-controller="Prestamos" asp-action="MisPrestamos" class="btn-sigebi">Mis Préstamos</a>
+        <a asp-controller="Penalizaciones" asp-action="MisPenalizaciones" class="btn-sigebi">Mis Penalizaciones</a>
+    </div>
+}
+</div>

@@ -15,6 +15,7 @@ namespace SIGEBI.IOC
             services.AddScoped<IPrestamoRepository, PrestamoRepository>();
             services.AddScoped<IPenalizacionRepository, PenalizacionRepository>();
             services.AddScoped<IRecursoRepository, RecursoRepository>();
+            services.AddScoped<INotificacionRepository, NotificacionRepository>();
 
             // servicios de aplicacion, la capa de business
             services.AddScoped<IUsuarioService, GestionarUsuarioUseCase>();

@@ -23,6 +23,7 @@ builder.Services.AddScoped<PrestamoApiService>();
 builder.Services.AddScoped<PenalizacionApiService>();
 builder.Services.AddScoped<RecursoApiService>();
 builder.Services.AddScoped<AuthApiService>();
+builder.Services.AddScoped<NotificacionApiService>();
 
 builder.Services.AddSession(options =>
 {
@@ -68,8 +69,17 @@ app.Use(async (context, next) =>
     }
 
     var rol = context.Session.GetString("Rol");
-    var rutasRestringidas = new[] { "/usuarios", "/devoluciones" };
 
+    // Rutas solo para Admin
+    var rutasSoloAdmin = new[] { "/usuarios" };
+    if (rol != "Administrador" && rutasSoloAdmin.Any(r => path.StartsWith(r)))
+    {
+        context.Response.Redirect("/Home/Index");
+        return;
+    }
+
+    // Rutas restringidas para Estudiante y Docente
+    var rutasRestringidas = new[] { "/devoluciones", "/prestamos/pendientes", "/prestamos/index", "/penalizaciones/index", "/penalizaciones/activas" };
     if ((rol == "Estudiante" || rol == "Docente") && rutasRestringidas.Any(r => path.StartsWith(r)))
     {
         context.Response.Redirect("/Home/Index");

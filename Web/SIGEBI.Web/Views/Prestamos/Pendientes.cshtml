@@ -1,0 +1,59 @@
+@model IEnumerable<SIGEBI.Business.DTOs.PrestamoDTO>
+
+@{
+    ViewData["Title"] = "Préstamos Pendientes";
+}
+
+<div class="sigebi-card">
+    <h2>Préstamos Pendientes de Aprobación</h2>
+    <p class="descripcion">
+        Solicitudes de préstamo enviadas por estudiantes y docentes que esperan tu aprobación. 
+        Al aprobar un préstamo, el recurso quedará reservado automáticamente.
+    </p>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 3rem; color: #94a3b8;">
+            <p style="font-size: 1.1rem;">No hay préstamos pendientes de aprobación.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Recurso</th>
+                    <th>Fecha Solicitud</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var prestamo in Model)
+                {
+                    <tr>
+                        <td>@prestamo.NombreUsuario</td>
+                        <td>@prestamo.TituloRecurso</td>
+                        <td>@prestamo.FechaInicio.ToShortDateString()</td>
+                        <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                        <td>
+
+                          <form method="post" asp-action="Aprobar" style="display:inline">
+    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="date" name="fechaVencimiento" class="form-control" 
+               style="width: 160px; padding: 0.4rem 0.8rem;" 
+               min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
+               value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" required />
+        <button type="submit" class="btn-sigebi">Aprobar</button>
+    </div>
+</form>
+                            
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -10,6 +10,7 @@ namespace SIGEBI.Business.UseCases
         private readonly IPrestamoRepository _prestamoRepository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IRecursoRepository _recursoRepository;
+        private readonly INotificacionRepository _notificacionRepository;
 
         private const int LIMITE_PRESTAMOS_SIMULTANEOS = 3;
         private const int DIAS_DURACION_PRESTAMO = 7;
@@ -17,11 +18,13 @@ namespace SIGEBI.Business.UseCases
         public SolicitarPrestamoUseCase(
             IPrestamoRepository prestamoRepository,
             IUsuarioRepository usuarioRepository,
-            IRecursoRepository recursoRepository)
+            IRecursoRepository recursoRepository,
+            INotificacionRepository notificacionRepository)
         {
             _prestamoRepository = prestamoRepository;
             _usuarioRepository = usuarioRepository;
             _recursoRepository = recursoRepository;
+            _notificacionRepository = notificacionRepository;
         }
 
         public async Task<IEnumerable<PrestamoDTO>> ObtenerTodosAsync()
@@ -33,10 +36,8 @@ namespace SIGEBI.Business.UseCases
         public async Task<PrestamoDTO> ObtenerPorIdAsync(int id)
         {
             var prestamo = await _prestamoRepository.GetByIdAsync(id);
-
             if (prestamo == null)
                 throw new Exception("Prestamo no encontrado.");
-
             return MapToDTO(prestamo);
         }
 
@@ -48,51 +49,67 @@ namespace SIGEBI.Business.UseCases
 
         public async Task<PrestamoDTO> SolicitarPrestamoAsync(int usuarioId, int recursoId)
         {
-            //  verificar estado del usuario 
             var usuario = await _usuarioRepository.GetByIdAsync(usuarioId);
-
             if (usuario == null)
                 throw new Exception("Usuario no encontrado.");
-
             if (usuario.Estado != "Activo")
-                throw new Exception("El usuario no se encuentra activo. No puede solicitar prestamos.");
+                throw new Exception("El usuario no se encuentra activo.");
 
-            // verificar limite de prestamos simultaneos 
             var prestamosActivos = await _prestamoRepository.GetByUsuarioIdAsync(usuarioId);
             var cantidadActivos = prestamosActivos.Count(p => p.Estado == "Activo");
-
             if (cantidadActivos >= LIMITE_PRESTAMOS_SIMULTANEOS)
                 throw new Exception("El usuario alcanzo el limite de prestamos simultaneos.");
 
-            // verificar disponibilidad de los ejemplares
             var recurso = await _recursoRepository.GetByIdAsync(recursoId);
-
             if (recurso == null)
                 throw new Exception("Recurso no encontrado.");
-
             if (recurso.CantidadDisponible <= 0)
                 throw new Exception("El recurso no esta disponible actualmente.");
 
-            // registrar el prestamo
             var nuevoPrestamo = new Prestamo
             {
                 UsuarioId = usuarioId,
                 RecursoId = recursoId,
                 FechaInicio = DateTime.Now,
                 FechaVencimiento = DateTime.Now.AddDays(DIAS_DURACION_PRESTAMO),
-                Estado = "Activo"
+                Estado = "Pendiente"
             };
 
             await _prestamoRepository.AddAsync(nuevoPrestamo);
+            return MapToDTO(nuevoPrestamo);
+        }
 
-            // actualizamos la disponibilidad de los ejemplares o el ejemplar
+        public async Task<bool> AprobarPrestamoAsync(int prestamoId, DateTime fechaVencimiento)
+        {
+            var prestamo = await _prestamoRepository.GetByIdAsync(prestamoId);
+            if (prestamo == null || prestamo.Estado != "Pendiente")
+                return false;
+
+            var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
+            if (recurso == null || recurso.CantidadDisponible <= 0)
+                return false;
+
+            prestamo.Estado = "Activo";
+            prestamo.FechaVencimiento = fechaVencimiento;
+            _prestamoRepository.Update(prestamo);
+
             recurso.CantidadDisponible -= 1;
             if (recurso.CantidadDisponible == 0)
                 recurso.Estado = "Prestado";
-
             _recursoRepository.Update(recurso);
 
-            return MapToDTO(nuevoPrestamo);
+            // Crear notificacion para el usuario
+            var notificacion = new Notificacion
+            {
+                UsuarioId = prestamo.UsuarioId,
+                Tipo = "PrestamoAprobado",
+                Mensaje = $"Tu solicitud de prestamo del libro '{recurso.Titulo}' ha sido aprobada. Debes devolverlo antes del {fechaVencimiento.ToShortDateString()}.",
+                Leida = false,
+                FechaCreacion = DateTime.Now
+            };
+
+            await _notificacionRepository.AddAsync(notificacion);
+            return true;
         }
 
         public async Task RegistrarDevolucionAsync(int prestamoId)

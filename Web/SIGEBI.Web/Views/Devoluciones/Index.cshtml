@@ -7,50 +7,50 @@
 <div class="sigebi-card">
     <h2>Registro de Devoluciones</h2>
     <p class="descripcion">
-        Gestiona las devoluciones de recursos bibliográficos. Al registrar una devolución, 
+        Préstamos activos pendientes de devolución. Al registrar una devolución, 
         el sistema actualizará automáticamente la disponibilidad del recurso y evaluará 
-        si aplica una penalización por retraso en la entrega.
+        si aplica una penalización por retraso.
     </p>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Recurso</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Vencimiento</th>
-                <th>Estado</th>
-                <th>Accion</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var prestamo in Model)
-            {
+    @{
+        var activos = Model.Where(p => p.Estado == "Activo").ToList();
+    }
+
+    @if (!activos.Any())
+    {
+        <div style="text-align: center; padding: 3rem; color: #94a3b8;">
+            <p style="font-size: 1.1rem;">No hay préstamos activos pendientes de devolución.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <td>@prestamo.NombreUsuario</td>
-                    <td>@prestamo.TituloRecurso</td>
-                    <td>@prestamo.FechaInicio.ToShortDateString()</td>
-                    <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
-                    <td>
-                        <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" ? "badge-vencido" : "badge-devuelto")">
-                            @prestamo.Estado
-                        </span>
-                    </td>
-                    <td>
-                        @if (prestamo.Estado == "Activo")
-                        {
+                    <th>Usuario</th>
+                    <th>Recurso</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var prestamo in activos)
+                {
+                    <tr>
+                        <td>@prestamo.NombreUsuario</td>
+                        <td>@prestamo.TituloRecurso</td>
+                        <td>@prestamo.FechaInicio.ToShortDateString()</td>
+                        <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
+                        <td>
                             <form method="post" asp-action="Registrar" style="display:inline">
                                 <input type="hidden" name="prestamoId" value="@prestamo.Id" />
-                                <button type="submit" class="btn-sigebi">Registrar Devolucion</button>
+                                <button type="submit" class="btn-sigebi">Registrar Devolución</button>
                             </form>
-                        }
-                        else
-                        {
-                            <span class="badge-devuelto">Completado</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>

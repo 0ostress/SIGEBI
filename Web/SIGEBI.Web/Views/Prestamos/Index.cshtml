@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Préstamos";
+    var rol = Context.Session.GetString("Rol");
 }
 
 <div class="sigebi-card">
@@ -9,11 +10,13 @@
         <div>
             <h2>Gestión de Préstamos</h2>
             <p class="descripcion">
-                Consulta y gestiona todos los préstamos activos y el historial del sistema. 
-                Desde aquí puedes solicitar nuevos préstamos y registrar devoluciones.
+                Historial completo de préstamos del sistema incluyendo activos, devueltos y rechazados.
             </p>
         </div>
-        <a asp-action="Solicitar" class="btn-sigebi">+ Solicitar Préstamo</a>
+        @if (rol == "Estudiante" || rol == "Docente")
+        {
+            <a asp-action="Solicitar" class="btn-sigebi">+ Solicitar Préstamo</a>
+        }
     </div>
 
     <table class="table table-hover">
@@ -24,7 +27,10 @@
                 <th>Fecha Inicio</th>
                 <th>Fecha Vencimiento</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                @if (rol == "Bibliotecario" || rol == "Administrador")
+                {
+                    <th>Acciones</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -36,19 +42,22 @@
                     <td>@prestamo.FechaInicio.ToShortDateString()</td>
                     <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
                     <td>
-                        <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" ? "badge-vencido" : "badge-devuelto")">
+                        <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" || prestamo.Estado == "Rechazado" ? "badge-vencido" : prestamo.Estado == "Pendiente" ? "badge-inactivo" : "badge-devuelto")">
                             @prestamo.Estado
                         </span>
                     </td>
-                    <td>
-                        @if (prestamo.Estado == "Activo")
-                        {
-                            <form method="post" asp-controller="Devoluciones" asp-action="Registrar" style="display:inline">
-                                <input type="hidden" name="prestamoId" value="@prestamo.Id" />
-                                <button type="submit" class="btn-outline-sigebi">Devolver</button>
-                            </form>
-                        }
-                    </td>
+                    @if (rol == "Bibliotecario" || rol == "Administrador")
+                    {
+                        <td>
+                            @if (prestamo.Estado == "Activo")
+                            {
+                                <form method="post" asp-controller="Devoluciones" asp-action="Registrar" style="display:inline">
+                                    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                    <button type="submit" class="btn-outline-sigebi">Devolver</button>
+                                </form>
+                            }
+                        </td>
+                    }
                 </tr>
             }
         </tbody>

@@ -98,5 +98,26 @@ namespace SIGEBI.Web.Services
                 return (false, $"Error inesperado: {ex.Message}");
             }
         }
+
+        public async Task<(bool Exito, string Mensaje)> EliminarAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/Usuarios/{id}");
+                if (response.IsSuccessStatusCode)
+                    return (true, "Usuario eliminado exitosamente.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al eliminar el usuario.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
+        }
     }
 }

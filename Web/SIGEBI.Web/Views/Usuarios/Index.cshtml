@@ -47,8 +47,17 @@
                     </td>
                     <td>@usuario.FechaRegistro.ToShortDateString()</td>
                     <td>
-                        <a asp-action="Editar" asp-route-id="@usuario.Id" class="btn-outline-sigebi">Editar</a>
-                    </td>
+    <div class="d-flex gap-2">
+        <a asp-action="Editar" asp-route-id="@usuario.Id" class="btn-outline-sigebi">Editar</a>
+        @if (Context.Session.GetString("Rol") == "Administrador")
+        {
+            <form method="post" asp-action="Eliminar" style="display:inline">
+                <input type="hidden" name="id" value="@usuario.Id" />
+                <button type="submit" class="btn-danger-sigebi">Eliminar</button>
+            </form>
+        }
+    </div>
+</td>
                 </tr>
             }
         </tbody>

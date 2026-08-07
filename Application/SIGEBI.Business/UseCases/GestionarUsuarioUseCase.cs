@@ -102,5 +102,14 @@ namespace SIGEBI.Business.UseCases
 
             _usuarioRepository.Update(usuario);
         }
+
+        public async Task EliminarAsync(int id)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado.");
+
+            await _usuarioRepository.DeleteAsync(id);
+        }
     }
 }

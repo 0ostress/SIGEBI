@@ -9,5 +9,6 @@ namespace SIGEBI.Business.Interfaces
         Task<UsuarioDTO> RegistrarAsync(UsuarioDTO usuarioDto);
         Task ActualizarAsync(UsuarioDTO usuarioDto);
         Task CambiarEstadoAsync(int id, string nuevoEstado);
+        Task EliminarAsync(int id);
     }
 }

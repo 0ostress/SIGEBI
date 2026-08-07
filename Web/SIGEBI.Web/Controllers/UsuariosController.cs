@@ -96,5 +96,21 @@ namespace SIGEBI.Web.Controllers
             TempData["Error"] = mensaje;
             return View(usuarioDto);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+                return RedirectToAction("Index", "Home");
+
+            var (exito, mensaje) = await _usuarioApiService.EliminarAsync(id);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
+            return RedirectToAction("Index");
+        }
     }
 }

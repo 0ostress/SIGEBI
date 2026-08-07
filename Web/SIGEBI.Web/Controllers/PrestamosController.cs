@@ -75,6 +75,18 @@ namespace SIGEBI.Web.Controllers
             return RedirectToAction("Pendientes");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Rechazar(int prestamoId, string motivo)
+        {
+            var (exito, mensaje) = await _prestamoApiService.RechazarPrestamoAsync(prestamoId, motivo);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
+            return RedirectToAction("Pendientes");
+        }
+
         public async Task<IActionResult> Pendientes()
         {
             var prestamos = await _prestamoApiService.ObtenerTodosAsync();

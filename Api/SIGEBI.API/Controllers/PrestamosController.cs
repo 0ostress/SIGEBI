@@ -92,6 +92,21 @@ namespace SIGEBI.API.Controllers
             }
         }
 
+        [HttpPost("rechazar/{prestamoId}")]
+        public async Task<IActionResult> RechazarPrestamo(int prestamoId, [FromBody] RechazarPrestamoRequest request)
+        {
+            try
+            {
+                var resultado = await _prestamoService.RechazarPrestamoAsync(prestamoId, request.Motivo);
+                if (resultado)
+                    return NoContent();
+                return BadRequest(new { mensaje = "No se pudo rechazar el prestamo. Verifique que este pendiente." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
 
 
 
@@ -110,6 +125,8 @@ namespace SIGEBI.API.Controllers
         }
     }
 
+ 
+
     public class AprobarPrestamoRequest
     {
         public DateTime FechaVencimiento { get; set; }
@@ -119,6 +136,11 @@ namespace SIGEBI.API.Controllers
     {
         public int UsuarioId { get; set; }
         public int RecursoId { get; set; }
+    }
+
+    public class RechazarPrestamoRequest
+    {
+        public string Motivo { get; set; }
     }
 
 

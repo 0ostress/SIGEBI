@@ -26,7 +26,7 @@
                     <th>Recurso</th>
                     <th>Fecha Solicitud</th>
                     <th>Fecha Vencimiento</th>
-                    <th>Acción</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,18 +38,26 @@
                         <td>@prestamo.FechaInicio.ToShortDateString()</td>
                         <td>@prestamo.FechaVencimiento.ToShortDateString()</td>
                         <td>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                
+                                <form method="post" asp-action="Aprobar" style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                    <input type="date" name="fechaVencimiento" class="form-control"
+                                           style="width: 160px; padding: 0.4rem 0.8rem;"
+                                           min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
+                                           value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" required />
+                                    <button type="submit" class="btn-sigebi">Aprobar</button>
+                                </form>
 
-                          <form method="post" asp-action="Aprobar" style="display:inline">
-    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
-    <div style="display: flex; gap: 0.5rem; align-items: center;">
-        <input type="date" name="fechaVencimiento" class="form-control" 
-               style="width: 160px; padding: 0.4rem 0.8rem;" 
-               min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"
-               value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" required />
-        <button type="submit" class="btn-sigebi">Aprobar</button>
-    </div>
-</form>
-                            
+                                <form method="post" asp-action="Rechazar" style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                    <input type="text" name="motivo" class="form-control"
+                                           style="width: 200px; padding: 0.4rem 0.8rem;"
+                                           placeholder="Motivo del rechazo" required />
+                                    <button type="submit" class="btn-danger-sigebi">Rechazar</button>
+                                </form>
+
+                            </div>
                         </td>
                     </tr>
                 }

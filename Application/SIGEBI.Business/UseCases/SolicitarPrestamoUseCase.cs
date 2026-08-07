@@ -75,7 +75,12 @@ namespace SIGEBI.Business.UseCases
                 Estado = "Pendiente"
             };
 
-            await _prestamoRepository.AddAsync(nuevoPrestamo);
+            // Reservar el ejemplar mientras esta pendiente
+            recurso.CantidadDisponible -= 1;
+            if (recurso.CantidadDisponible == 0)
+                recurso.Estado = "Prestado";
+            _recursoRepository.Update(recurso);
+
             // Notificar a todos los bibliotecarios y admins
             var todosUsuarios = await _usuarioRepository.GetAllAsync();
             var bibliotecarios = todosUsuarios.Where(u => u.Rol == "Bibliotecario" || u.Rol == "Administrador");
@@ -154,6 +159,40 @@ namespace SIGEBI.Business.UseCases
 
                 await _notificacionRepository.AddAsync(notificacion);
             }
+        }
+
+        public async Task<bool> RechazarPrestamoAsync(int prestamoId, string motivo)
+        {
+            var prestamo = await _prestamoRepository.GetByIdAsync(prestamoId);
+
+            if (prestamo == null || prestamo.Estado != "Pendiente")
+                return false;
+
+            prestamo.Estado = "Rechazado";
+            _prestamoRepository.Update(prestamo);
+
+            // Devolver el ejemplar reservado
+            var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
+            if (recurso != null)
+            {
+                recurso.CantidadDisponible += 1;
+                if (recurso.Estado == "Prestado")
+                    recurso.Estado = "Disponible";
+                _recursoRepository.Update(recurso);
+            }
+
+            // Notificar al usuario
+            var notificacion = new Notificacion
+            {
+                UsuarioId = prestamo.UsuarioId,
+                Tipo = "PrestamoRechazado",
+                Mensaje = $"Tu solicitud de prestamo del libro '{recurso?.Titulo}' fue rechazada. Motivo: {motivo}.",
+                Leida = false,
+                FechaCreacion = DateTime.Now
+            };
+
+            await _notificacionRepository.AddAsync(notificacion);
+            return true;
         }
 
         private PrestamoDTO MapToDTO(Prestamo p)

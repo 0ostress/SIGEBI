@@ -4,27 +4,43 @@
     ViewData["Title"] = "Nuevo Recurso";
 }
 
-<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+<div class="sigebi-card" style="max-width: 650px; margin: 0 auto;">
     <h2>Registrar Recurso</h2>
     <p class="descripcion">
-        Completa el formulario para agregar un nuevo recurso al catálogo bibliográfico. 
-        La cantidad disponible se establecerá igual a la cantidad total si no se especifica.
+        Completa el formulario para agregar un nuevo recurso al catálogo bibliográfico.
     </p>
 
-    <form method="post" asp-action="Crear">
-        <div class="mb-3">
+    <form method="post" asp-action="Crear" id="formRecurso" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label class="form-label">Portada del Libro</label>
+            <div id="dropzone" style="border: 2px dashed #7c3aed; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(124,58,237,0.05);">
+                <div id="dropzone-content">
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">Arrastra una imagen aquí o haz clic para seleccionar</p>
+                    <p style="color: #64748b; margin: 0.5rem 0 0; font-size: 0.8rem;">JPG, PNG o WEBP</p>
+                </div>
+                <img id="preview" src="" alt="Preview" style="display:none; max-height: 200px; border-radius: 8px; margin-top: 1rem;" />
+            </div>
+            <input type="file" id="inputImagen" name="imagenFile" accept=".jpg,.jpeg,.png,.webp" style="display:none" />
+            <input type="hidden" name="ImagenUrl" id="imagenUrlInput" />
+        </div>
+
+        <div class="mb-4">
             <label class="form-label">Título</label>
             <input type="text" name="Titulo" class="form-control" required />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Autor</label>
             <input type="text" name="Autor" class="form-control" required />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
+            <label class="form-label">Descripción</label>
+            <textarea name="Descripcion" class="form-control" rows="3" placeholder="Breve descripción del libro..."></textarea>
+        </div>
+        <div class="mb-4">
             <label class="form-label">ISBN (opcional)</label>
             <input type="text" name="ISBN" class="form-control" />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Categoría</label>
             <select name="Categoria" class="form-select">
                 <option value="Programacion">Programación</option>
@@ -36,7 +52,7 @@
                 <option value="Otro">Otro</option>
             </select>
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Cantidad Total de Ejemplares</label>
             <input type="number" name="CantidadTotal" class="form-control" min="1" required />
         </div>
@@ -46,3 +62,50 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const inputImagen = document.getElementById('inputImagen');
+    const preview = document.getElementById('preview');
+    const dropzoneContent = document.getElementById('dropzone-content');
+
+    dropzone.addEventListener('click', () => inputImagen.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#a855f7';
+        dropzone.style.background = 'rgba(124,58,237,0.15)';
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = '#7c3aed';
+        dropzone.style.background = 'rgba(124,58,237,0.05)';
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#7c3aed';
+        dropzone.style.background = 'rgba(124,58,237,0.05)';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            inputImagen.files = e.dataTransfer.files;
+            mostrarPreview(file);
+        }
+    });
+
+    inputImagen.addEventListener('change', () => {
+        if (inputImagen.files[0]) mostrarPreview(inputImagen.files[0]);
+    });
+
+    function mostrarPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            dropzoneContent.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+}

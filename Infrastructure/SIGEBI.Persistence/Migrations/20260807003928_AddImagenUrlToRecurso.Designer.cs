@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIGEBI.Persistence.Context;
 
@@ -11,9 +12,11 @@ using SIGEBI.Persistence.Context;
 namespace SIGEBI.Persistence.Migrations
 {
     [DbContext(typeof(SigebiContext))]
-    partial class SigebiContextModelSnapshot : ModelSnapshot
+    [Migration("20260807003928_AddImagenUrlToRecurso")]
+    partial class AddImagenUrlToRecurso
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,9 +155,6 @@ namespace SIGEBI.Persistence.Migrations
 
                     b.Property<string>("Categoria")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Estado")

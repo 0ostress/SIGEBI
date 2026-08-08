@@ -7,10 +7,12 @@ namespace SIGEBI.Web.Controllers
     public class RecursosController : Controller
     {
         private readonly RecursoApiService _recursoApiService;
+        private readonly ImagenApiService _imagenApiService;
 
-        public RecursosController(RecursoApiService recursoApiService)
+        public RecursosController(RecursoApiService recursoApiService, ImagenApiService imagenApiService)
         {
             _recursoApiService = recursoApiService;
+            _imagenApiService = imagenApiService;
         }
 
         public async Task<IActionResult> Index()
@@ -31,11 +33,18 @@ namespace SIGEBI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear(RecursoDTO recursoDto)
+        public async Task<IActionResult> Crear(RecursoDTO recursoDto, IFormFile? imagenFile)
         {
             var (exito, mensaje) = await _recursoApiService.RegistrarAsync(recursoDto);
             if (exito)
             {
+                if (imagenFile != null && imagenFile.Length > 0)
+                {
+                    var recursos = await _recursoApiService.ObtenerTodosAsync();
+                    var nuevoRecurso = recursos.OrderByDescending(r => r.Id).FirstOrDefault();
+                    if (nuevoRecurso != null)
+                        await _imagenApiService.SubirImagenAsync(nuevoRecurso.Id, imagenFile);
+                }
                 TempData["Exito"] = mensaje;
                 return RedirectToAction("Index");
             }
@@ -55,11 +64,14 @@ namespace SIGEBI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Editar(RecursoDTO recursoDto)
+        public async Task<IActionResult> Editar(RecursoDTO recursoDto, IFormFile? imagenFile)
         {
             var (exito, mensaje) = await _recursoApiService.ActualizarAsync(recursoDto);
             if (exito)
             {
+                if (imagenFile != null && imagenFile.Length > 0)
+                    await _imagenApiService.SubirImagenAsync(recursoDto.Id, imagenFile);
+
                 TempData["Exito"] = mensaje;
                 return RedirectToAction("Index");
             }

@@ -109,7 +109,9 @@ namespace SIGEBI.Business.UseCases
             if (usuario == null)
                 throw new Exception("Usuario no encontrado.");
 
-            await _usuarioRepository.DeleteAsync(id);
+            // En lugar de eliminar, desactivar el usuario
+            usuario.Estado = "Inactivo";
+            _usuarioRepository.Update(usuario);
         }
     }
 }

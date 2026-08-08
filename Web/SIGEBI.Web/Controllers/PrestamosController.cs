@@ -104,5 +104,36 @@ namespace SIGEBI.Web.Controllers
                 TempData["Error"] = mensaje;
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SolicitarAjax([FromBody] SolicitarPrestamoRequest request)
+        {
+            var (exito, mensaje) = await _prestamoApiService.SolicitarPrestamoAsync(request.UsuarioId, request.RecursoId);
+            if (exito)
+                return Ok(new { mensaje });
+            return BadRequest(new { mensaje });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Renovar(int prestamoId)
+        {
+            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
+            if (string.IsNullOrEmpty(usuarioIdStr))
+                return RedirectToAction("Login", "Auth");
+
+            var (exito, mensaje) = await _prestamoApiService.RenovarPrestamoAsync(prestamoId, int.Parse(usuarioIdStr));
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
+            return RedirectToAction("MisPrestamos");
+        }
+
+        public class SolicitarPrestamoRequest
+        {
+            public int UsuarioId { get; set; }
+            public int RecursoId { get; set; }
+        }
     }
 }

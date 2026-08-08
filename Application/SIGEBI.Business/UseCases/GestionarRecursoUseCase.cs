@@ -51,7 +51,8 @@ namespace SIGEBI.Business.UseCases
                 CantidadDisponible = recursoDto.CantidadDisponible == 0
                     ? recursoDto.CantidadTotal
                     : recursoDto.CantidadDisponible,
-                FechaRegistro = DateTime.UtcNow
+                FechaRegistro = DateTime.UtcNow,
+                Descripcion = recursoDto.Descripcion
             };
 
             await _recursoRepository.AddAsync(recurso);
@@ -70,6 +71,10 @@ namespace SIGEBI.Business.UseCases
             recursoExistente.Estado = recursoDto.Estado;
             recursoExistente.CantidadTotal = recursoDto.CantidadTotal;
             recursoExistente.CantidadDisponible = recursoDto.CantidadDisponible;
+            recursoExistente.Descripcion = recursoDto.Descripcion;
+
+            if (!string.IsNullOrEmpty(recursoDto.ImagenUrl))
+                recursoExistente.ImagenUrl = recursoDto.ImagenUrl;
 
             _recursoRepository.Update(recursoExistente);
             return MapToDto(recursoExistente);
@@ -111,7 +116,9 @@ namespace SIGEBI.Business.UseCases
                 Estado = recurso.Estado,
                 CantidadTotal = recurso.CantidadTotal,
                 CantidadDisponible = recurso.CantidadDisponible,
-                FechaRegistro = recurso.FechaRegistro
+                FechaRegistro = recurso.FechaRegistro,
+                ImagenUrl = recurso.ImagenUrl,
+                Descripcion = recurso.Descripcion
             };
         }
     }

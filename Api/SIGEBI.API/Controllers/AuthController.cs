@@ -29,8 +29,11 @@ namespace SIGEBI.API.Controllers
                 if (usuario == null)
                     return Unauthorized(new { mensaje = "Correo no encontrado." });
 
-                if (usuario.Estado != "Activo")
-                    return Unauthorized(new { mensaje = "Tu cuenta está suspendida o inactiva." });
+                if (usuario.Estado == "Inactivo")
+                    return Unauthorized(new { mensaje = "Tu cuenta ha sido desactivada. Contacta al administrador para recuperar el acceso." });
+
+                if (usuario.Estado == "Suspendido")
+                    return Unauthorized(new { mensaje = "Tu cuenta está suspendida por penalizaciones activas. Resuelve tus penalizaciones para volver a acceder." });
 
                 var token = _tokenService.GenerarToken(usuario);
 

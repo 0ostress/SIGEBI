@@ -8,7 +8,7 @@
 <div class="sigebi-card">
     <h2>Mis Préstamos</h2>
     <p class="descripcion">
-        Aquí puedes consultar todos tus préstamos activos e historial de préstamos anteriores, @nombre.
+        Aquí puedes consultar todos tus préstamos activos e historial. Puedes renovar préstamos activos que no hayan vencido.
     </p>
 
     @if (!Model.Any())
@@ -28,6 +28,7 @@
                     <th>Fecha Vencimiento</th>
                     <th>Fecha Devolución</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,9 +49,18 @@
                             }
                         </td>
                         <td>
-                            <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" ? "badge-vencido" : "badge-devuelto")">
+                            <span class="@(prestamo.Estado == "Activo" ? "badge-activo" : prestamo.Estado == "Vencido" || prestamo.Estado == "Rechazado" ? "badge-vencido" : prestamo.Estado == "Pendiente" ? "badge-inactivo" : "badge-devuelto")">
                                 @prestamo.Estado
                             </span>
+                        </td>
+                        <td>
+                            @if (prestamo.Estado == "Activo" && prestamo.FechaVencimiento > DateTime.Now)
+                            {
+                                <form method="post" asp-action="Renovar" style="display:inline">
+                                    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+                                    <button type="submit" class="btn-outline-sigebi">Renovar +7 días</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

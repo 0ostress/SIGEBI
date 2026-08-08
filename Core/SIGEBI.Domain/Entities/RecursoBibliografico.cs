@@ -11,8 +11,9 @@
         public int CantidadTotal { get; set; }
         public int CantidadDisponible { get; set; }
         public DateTime FechaRegistro { get; set; }
-
-        
+        public string? ImagenUrl { get; set; }
         public ICollection<Prestamo> Prestamos { get; set; }
+
+        public string? Descripcion { get; set; }
     }
 }

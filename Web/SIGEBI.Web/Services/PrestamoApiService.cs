@@ -144,5 +144,26 @@ namespace SIGEBI.Web.Services
             }
         }
 
+        public async Task<(bool Exito, string Mensaje)> RenovarPrestamoAsync(int prestamoId, int usuarioId)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/Prestamos/renovar/{prestamoId}", new { UsuarioId = usuarioId });
+                if (response.IsSuccessStatusCode)
+                    return (true, "Prestamo renovado exitosamente por 7 dias mas.");
+
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                return (false, error?.GetValueOrDefault("mensaje") ?? "Error al renovar el prestamo.");
+            }
+            catch (HttpRequestException)
+            {
+                return (false, "No se pudo conectar con el servidor.");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error inesperado: {ex.Message}");
+            }
+        }
+
     }
 }

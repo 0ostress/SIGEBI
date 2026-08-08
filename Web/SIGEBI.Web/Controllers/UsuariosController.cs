@@ -112,5 +112,21 @@ namespace SIGEBI.Web.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CambiarEstado(int id, string nuevoEstado)
+        {
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+                return RedirectToAction("Index", "Home");
+
+            var (exito, mensaje) = await _usuarioApiService.CambiarEstadoAsync(id, nuevoEstado);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
+            return RedirectToAction("Index");
+        }
     }
 }

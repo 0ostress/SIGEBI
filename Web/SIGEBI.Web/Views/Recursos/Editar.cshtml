@@ -4,28 +4,54 @@
     ViewData["Title"] = "Editar Recurso";
 }
 
-<div class="sigebi-card" style="max-width: 600px; margin: 0 auto;">
+<div class="sigebi-card" style="max-width: 650px; margin: 0 auto;">
     <h2>Editar Recurso</h2>
     <p class="descripcion">
-        Modifica la información del recurso bibliográfico. 
-        Los cambios se aplicarán de inmediato.
+        Modifica la información del recurso bibliográfico incluyendo su portada y descripción.
     </p>
 
-    <form method="post" asp-action="Editar">
+    <form method="post" asp-action="Editar" enctype="multipart/form-data">
         <input type="hidden" name="Id" value="@Model.Id" />
-        <div class="mb-3">
+
+        <!-- Portada -->
+        <div class="mb-4">
+            <label class="form-label">Portada del Libro</label>
+            <div id="dropzone" style="border: 2px dashed #7c3aed; border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(124,58,237,0.05);">
+                <div id="dropzone-content">
+                    @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                    {
+                        <img id="preview" src="http://localhost:5200@Model.ImagenUrl" alt="Portada actual"
+                             style="max-height: 180px; border-radius: 8px;" />
+                        <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 0.5rem;">Arrastra o haz clic para cambiar la portada</p>
+                    }
+                    else
+                    {
+                        <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">Arrastra una imagen aquí o haz clic para seleccionar</p>
+                        <p style="color: #64748b; margin: 0.5rem 0 0; font-size: 0.8rem;">JPG, PNG o WEBP</p>
+                        <img id="preview" src="" alt="Preview" style="display:none; max-height: 180px; border-radius: 8px; margin-top: 1rem;" />
+                    }
+                </div>
+            </div>
+            <input type="file" id="inputImagen" name="imagenFile" accept=".jpg,.jpeg,.png,.webp" style="display:none" />
+        </div>
+
+        <div class="mb-4">
             <label class="form-label">Título</label>
             <input type="text" name="Titulo" value="@Model.Titulo" class="form-control" required />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Autor</label>
             <input type="text" name="Autor" value="@Model.Autor" class="form-control" required />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
+            <label class="form-label">Descripción</label>
+            <textarea name="Descripcion" class="form-control" rows="3">@Model.Descripcion</textarea>
+        </div>
+        <div class="mb-4">
             <label class="form-label">ISBN (opcional)</label>
             <input type="text" name="ISBN" value="@Model.ISBN" class="form-control" />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Categoría</label>
             <select name="Categoria" class="form-select">
                 @foreach (var cat in new[] { "Programacion", "Matematicas", "Ciencias", "Historia", "Literatura", "Ingenieria", "Otro" })
@@ -41,7 +67,7 @@
                 }
             </select>
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Estado</label>
             <select name="Estado" class="form-select">
                 @foreach (var estado in new[] { "Disponible", "Prestado", "FueraDeServicio" })
@@ -57,11 +83,11 @@
                 }
             </select>
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Cantidad Total</label>
             <input type="number" name="CantidadTotal" value="@Model.CantidadTotal" class="form-control" min="1" required />
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Cantidad Disponible</label>
             <input type="number" name="CantidadDisponible" value="@Model.CantidadDisponible" class="form-control" min="0" required />
         </div>
@@ -71,3 +97,48 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const inputImagen = document.getElementById('inputImagen');
+    const preview = document.getElementById('preview');
+
+    dropzone.addEventListener('click', () => inputImagen.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#a855f7';
+        dropzone.style.background = 'rgba(124,58,237,0.15)';
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = '#7c3aed';
+        dropzone.style.background = 'rgba(124,58,237,0.05)';
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#7c3aed';
+        dropzone.style.background = 'rgba(124,58,237,0.05)';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            inputImagen.files = e.dataTransfer.files;
+            mostrarPreview(file);
+        }
+    });
+
+    inputImagen.addEventListener('change', () => {
+        if (inputImagen.files[0]) mostrarPreview(inputImagen.files[0]);
+    });
+
+    function mostrarPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+}

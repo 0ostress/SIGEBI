@@ -12,5 +12,7 @@ namespace SIGEBI.Business.Interfaces
         Task<bool> AprobarPrestamoAsync(int prestamoId, DateTime fechaVencimiento);
         Task<bool> RechazarPrestamoAsync(int prestamoId, string motivo);
         Task NotificarVencimientosProximosAsync();
+
+        Task<bool> RenovarPrestamoAsync(int prestamoId, int usuarioId);
     }
 }

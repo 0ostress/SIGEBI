@@ -21,4 +21,20 @@
     <ProjectReference Include="..\..\IOC\SIGEBI.IOC\SIGEBI.IOC.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\uploads\.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>.txt</LastGenOutput>
+    </Content>
+    <Content Update="wwwroot\uploads\.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>.tt</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
 </Project>

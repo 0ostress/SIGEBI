@@ -148,7 +148,9 @@ namespace SIGEBI.Business.UseCases
             foreach (var prestamo in proximos)
             {
                 var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
-                var notificacion = new Notificacion
+
+                // Notificar al estudiante
+                var notificacionEstudiante = new Notificacion
                 {
                     UsuarioId = prestamo.UsuarioId,
                     Tipo = "VencimientoProximo",
@@ -156,8 +158,23 @@ namespace SIGEBI.Business.UseCases
                     Leida = false,
                     FechaCreacion = DateTime.Now
                 };
+                await _notificacionRepository.AddAsync(notificacionEstudiante);
 
-                await _notificacionRepository.AddAsync(notificacion);
+                // Notificar a bibliotecarios y admins
+                var todosUsuarios = await _usuarioRepository.GetAllAsync();
+                var bibliotecarios = todosUsuarios.Where(u => u.Rol == "Bibliotecario" || u.Rol == "Administrador");
+                foreach (var bibliotecario in bibliotecarios)
+                {
+                    var notificacionBibliotecario = new Notificacion
+                    {
+                        UsuarioId = bibliotecario.Id,
+                        Tipo = "VencimientoProximo",
+                        Mensaje = $"El prestamo del libro '{recurso?.Titulo}' del usuario {prestamo.UsuarioId} vence en 2 dias, el {prestamo.FechaVencimiento.ToShortDateString()}.",
+                        Leida = false,
+                        FechaCreacion = DateTime.Now
+                    };
+                    await _notificacionRepository.AddAsync(notificacionBibliotecario);
+                }
             }
         }
 
@@ -192,6 +209,39 @@ namespace SIGEBI.Business.UseCases
             };
 
             await _notificacionRepository.AddAsync(notificacion);
+            return true;
+        }
+
+        public async Task<bool> RenovarPrestamoAsync(int prestamoId, int usuarioId)
+        {
+            var prestamo = await _prestamoRepository.GetByIdAsync(prestamoId);
+
+            if (prestamo == null || prestamo.Estado != "Activo")
+                return false;
+
+            if (prestamo.UsuarioId != usuarioId)
+                return false;
+
+            // Solo se puede renovar si no está vencido
+            if (prestamo.FechaVencimiento < DateTime.Now)
+                return false;
+
+            // Extender 7 días más
+            prestamo.FechaVencimiento = prestamo.FechaVencimiento.AddDays(7);
+            _prestamoRepository.Update(prestamo);
+
+            // Notificar al estudiante
+            var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
+            var notificacion = new Notificacion
+            {
+                UsuarioId = usuarioId,
+                Tipo = "PrestamoRenovado",
+                Mensaje = $"Tu prestamo del libro '{recurso?.Titulo}' ha sido renovado exitosamente. Nueva fecha de vencimiento: {prestamo.FechaVencimiento.ToShortDateString()}.",
+                Leida = false,
+                FechaCreacion = DateTime.Now
+            };
+            await _notificacionRepository.AddAsync(notificacion);
+
             return true;
         }
 

@@ -108,6 +108,22 @@ namespace SIGEBI.API.Controllers
             }
         }
 
+        [HttpPost("renovar/{prestamoId}")]
+        public async Task<IActionResult> RenovarPrestamo(int prestamoId, [FromBody] RenovarPrestamoRequest request)
+        {
+            try
+            {
+                var resultado = await _prestamoService.RenovarPrestamoAsync(prestamoId, request.UsuarioId);
+                if (resultado)
+                    return NoContent();
+                return BadRequest(new { mensaje = "No se pudo renovar el prestamo. Verifique que este activo y no vencido." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mensaje = ex.Message });
+            }
+        }
+
 
 
         [HttpPost("devolver/{prestamoId}")]
@@ -141,6 +157,11 @@ namespace SIGEBI.API.Controllers
     public class RechazarPrestamoRequest
     {
         public string Motivo { get; set; }
+    }
+
+    public class RenovarPrestamoRequest
+    {
+        public int UsuarioId { get; set; }
     }
 
 

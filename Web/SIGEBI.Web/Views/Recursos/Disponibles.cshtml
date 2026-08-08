@@ -4,46 +4,15 @@
     ViewData["Title"] = "Recursos Disponibles";
 }
 
-<!-- Modal de confirmación -->
-<div id="modal-carrito" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#1a1a2e; border:1px solid #7c3aed; border-radius:16px; padding:2rem; max-width:500px; width:90%; box-shadow:0 0 40px rgba(124,58,237,0.4);">
-        <h3 style="background:linear-gradient(135deg,#a855f7,#3b82f6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:700; margin-bottom:1rem;">
-            Agregar al Carrito
-        </h3>
-        <p id="modal-libro-info" style="color:#e2e8f0; margin-bottom:1.5rem;"></p>
-        <div class="d-flex gap-2">
-            <button onclick="agregarAlCarrito()" class="btn-sigebi" style="flex:1;">Agregar al Carrito</button>
-            <button onclick="cerrarModal()" class="btn-outline-sigebi" style="flex:1;">Cancelar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal del carrito -->
-<div id="modal-ver-carrito" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#1a1a2e; border:1px solid #7c3aed; border-radius:16px; padding:2rem; max-width:550px; width:90%; box-shadow:0 0 40px rgba(124,58,237,0.4);">
-        <h3 style="background:linear-gradient(135deg,#a855f7,#3b82f6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:700; margin-bottom:1rem;">
-            Mi Carrito
-        </h3>
-        <div id="carrito-items" style="max-height:300px; overflow-y:auto; margin-bottom:1rem;"></div>
-        <div class="d-flex gap-2">
-            <button onclick="confirmarSolicitudes()" class="btn-sigebi" style="flex:1;">Confirmar Solicitudes</button>
-            <button onclick="cerrarCarrito()" class="btn-outline-sigebi" style="flex:1;">Seguir Explorando</button>
-        </div>
-    </div>
-</div>
-
 <div class="sigebi-card">
     <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
             <h2>Catálogo Bibliográfico</h2>
             <p class="descripcion">
                 Explora los recursos bibliográficos disponibles para préstamo.
+                Haz clic en un libro para ver más detalles o agrégalo al carrito para solicitar el préstamo.
             </p>
         </div>
-        <button onclick="verCarrito()" class="btn-outline-sigebi" style="position:relative;">
-            🛒 Carrito
-            <span id="carrito-badge" style="display:none; position:absolute; top:-5px; right:-5px; background:#ef4444; color:white; border-radius:50%; font-size:0.6rem; padding:2px 5px;">0</span>
-        </button>
     </div>
 
     @if (!Model.Any())
@@ -61,7 +30,6 @@
                      onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(124,58,237,0.3)'"
                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.3)'">
 
-                    <!-- Portada clickeable -->
                     <a asp-controller="Recursos" asp-action="Detalle" asp-route-id="@recurso.Id" style="text-decoration:none;">
                         <div style="height:200px; background:linear-gradient(135deg,#1a1a2e,#16213e); display:flex; align-items:center; justify-content:center; overflow:hidden;">
                             @if (!string.IsNullOrEmpty(recurso.ImagenUrl))
@@ -96,9 +64,9 @@
 
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
                             <span class="badge-activo">@recurso.CantidadDisponible disponibles</span>
-                            <button onclick="abrirModal(@recurso.Id, '@recurso.Titulo', '@recurso.Autor')"
+                            <button onclick="agregarAlCarrito(@recurso.Id, '@recurso.Titulo.Replace("'", "\'")', '@recurso.Autor.Replace("'", "\'")')"
                                     style="background:linear-gradient(135deg,#7c3aed,#2563eb); color:white; padding:0.35rem 0.8rem; border-radius:6px; font-size:0.8rem; border:none; font-weight:600; cursor:pointer;">
-                                Solicitar
+                                + Carrito
                             </button>
                         </div>
                     </div>
@@ -108,113 +76,25 @@
     }
 </div>
 
-
 @section Scripts {
-    <script>
-        let carrito = [];
-        let recursoActual = null;
-
-        function abrirModal(id, titulo, autor) {
-            recursoActual = { id, titulo, autor };
-            document.getElementById('modal-libro-info').innerHTML =
-                `¿Deseas agregar <strong style="color:#a855f7">${titulo}</strong> de ${autor} a tu carrito de solicitudes?`;
-            document.getElementById('modal-carrito').style.display = 'flex';
-        }
-
-        function cerrarModal() {
-            document.getElementById('modal-carrito').style.display = 'none';
-            recursoActual = null;
-        }
-
-        function agregarAlCarrito() {
-            if (!recursoActual) return;
-
-            // Verificar si ya está en el carrito
-            if (carrito.find(r => r.id === recursoActual.id)) {
-                alert('Este libro ya está en tu carrito.');
-                cerrarModal();
-                return;
-            }
-
-            carrito.push(recursoActual);
-            actualizarBadge();
-            cerrarModal();
-
-            // Mostrar confirmación
-            const badge = document.getElementById('carrito-badge');
-            badge.style.background = '#10b981';
-            setTimeout(() => badge.style.background = '#ef4444', 1000);
-        }
-
-        function actualizarBadge() {
-            const badge = document.getElementById('carrito-badge');
-            if (carrito.length > 0) {
-                badge.style.display = 'inline';
-                badge.textContent = carrito.length;
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        function verCarrito() {
-            const items = document.getElementById('carrito-items');
-            if (carrito.length === 0) {
-                items.innerHTML = '<p style="color:#94a3b8; text-align:center;">Tu carrito está vacío.</p>';
-            } else {
-                items.innerHTML = carrito.map((r, i) => `
-                    <div style="background:rgba(124,58,237,0.1); border:1px solid #2d2d4e; border-radius:10px; padding:0.8rem 1rem; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <p style="color:#e2e8f0; margin:0; font-weight:600; font-size:0.9rem;">${r.titulo}</p>
-                            <p style="color:#94a3b8; margin:0; font-size:0.8rem;">${r.autor}</p>
-                        </div>
-                        <button onclick="quitarDelCarrito(${i})" style="background:rgba(239,68,68,0.2); border:none; color:#ef4444; padding:0.3rem 0.6rem; border-radius:6px; cursor:pointer;">✕</button>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('modal-ver-carrito').style.display = 'flex';
-        }
-
-        function quitarDelCarrito(index) {
-            carrito.splice(index, 1);
-            actualizarBadge();
-            verCarrito();
-        }
-
-        function cerrarCarrito() {
-            document.getElementById('modal-ver-carrito').style.display = 'none';
-        }
-
-        async function confirmarSolicitudes() {
-            if (carrito.length === 0) return;
-
-            const usuarioId = '@Context.Session.GetString("UsuarioId")';
-            let exitosos = 0;
-            let fallidos = 0;
-
-            for (const recurso of carrito) {
-                try {
-                    const response = await fetch('/Prestamos/SolicitarAjax', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ usuarioId: parseInt(usuarioId), recursoId: recurso.id })
-                    });
-                    if (response.ok) exitosos++;
-                    else fallidos++;
-                } catch {
-                    fallidos++;
+<script>
+    async function agregarAlCarrito(id, titulo, autor) {
+        if (confirm(`¿Deseas agregar "${titulo}" al carrito de solicitudes?`)) {
+            const response = await fetch('/Carrito/Agregar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `recursoId=${id}&titulo=${encodeURIComponent(titulo)}&autor=${encodeURIComponent(autor)}`
+            });
+            const resultado = await response.json();
+            if (resultado.exito) {
+                const badge = document.getElementById('navbar-carrito-badge');
+                if (badge) {
+                    badge.style.display = 'inline';
+                    badge.textContent = resultado.cantidad;
                 }
+                alert(`✅ "${titulo}" agregado al carrito. Tienes ${resultado.cantidad} libro(s).`);
             }
-
-            carrito = [];
-            actualizarBadge();
-            cerrarCarrito();
-
-            if (exitosos > 0 && fallidos === 0)
-                alert(`✅ ${exitosos} solicitud(es) enviada(s) exitosamente. El bibliotecario las revisará pronto.`);
-            else if (exitosos > 0 && fallidos > 0)
-                alert(`✅ ${exitosos} solicitud(es) enviada(s). ❌ ${fallidos} no se pudo(ieron) procesar.`);
-            else
-                alert('❌ No se pudo procesar ninguna solicitud. Verifica que no tengas penalizaciones activas.');
         }
-    </script>
+    }
+</script>
 }

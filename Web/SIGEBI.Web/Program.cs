@@ -26,6 +26,7 @@ builder.Services.AddScoped<AuthApiService>();
 builder.Services.AddScoped<NotificacionApiService>();
 builder.Services.AddScoped<ReporteApiService>();
 builder.Services.AddScoped<ImagenApiService>();
+builder.Services.AddScoped<ResenaApiService>();
 
 builder.Services.AddSession(options =>
 {

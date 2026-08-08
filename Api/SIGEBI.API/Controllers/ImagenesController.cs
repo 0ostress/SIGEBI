@@ -30,7 +30,7 @@ namespace SIGEBI.API.Controllers
                 if (!extensionesPermitidas.Contains(extension))
                     return BadRequest(new { mensaje = "Solo se permiten imagenes JPG, PNG o WEBP." });
 
-                var carpeta = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
+                var carpeta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
                 Directory.CreateDirectory(carpeta);
 
                 var nombreArchivo = $"recurso_{recursoId}_{Guid.NewGuid()}{extension}";

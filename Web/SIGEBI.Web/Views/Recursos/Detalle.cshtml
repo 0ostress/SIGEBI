@@ -1,0 +1,164 @@
+@model SIGEBI.Web.ViewModels.RecursoDetalleViewModel
+
+@{
+    ViewData["Title"] = Model.Recurso.Titulo;
+    var usuarioId = Context.Session.GetString("UsuarioId");
+    var rol = Context.Session.GetString("Rol");
+}
+
+<div class="sigebi-card">
+    <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+        
+        <!-- Portada -->
+        <div>
+            <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(124,58,237,0.3); height: 380px; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center;">
+                @if (!string.IsNullOrEmpty(Model.Recurso.ImagenUrl))
+                {
+                    <img src="@($"http://localhost:5200{Model.Recurso.ImagenUrl}")" alt="@Model.Recurso.Titulo"
+                         style="width: 100%; height: 100%; object-fit: cover;" />
+                }
+                else
+                {
+                    <p style="font-size: 4rem;">📚</p>
+                }
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <span class="badge-activo">@Model.Recurso.CantidadDisponible ejemplares disponibles</span>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div>
+            <h2 style="font-size: 1.8rem; margin-bottom: 0.3rem;">@Model.Recurso.Titulo</h2>
+            <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 0.3rem;">@Model.Recurso.Autor</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">@Model.Recurso.Categoria</p>
+
+            <!-- Promedio estrellas -->
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span style="font-size: 1.5rem; color: @(i <= Model.PromedioEstrellas ? "#f59e0b" : "#2d2d4e");">★</span>
+                }
+                <span style="color: #94a3b8; font-size: 0.9rem;">
+                    @(Model.PromedioEstrellas > 0 ? $"{Model.PromedioEstrellas} / 5 ({Model.Resenas.Count()} reseñas)" : "Sin reseñas aún")
+                </span>
+            </div>
+
+            <!-- Descripción -->
+            @if (!string.IsNullOrEmpty(Model.Recurso.Descripcion))
+            {
+                <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                    <p style="color: #e2e8f0; line-height: 1.7; margin: 0;">@Model.Recurso.Descripcion</p>
+                </div>
+            }
+
+            <!-- Botón solicitar -->
+            @if (rol == "Estudiante" || rol == "Docente")
+            {
+                <a asp-controller="Prestamos" asp-action="Solicitar" class="btn-sigebi">Solicitar Préstamo</a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Reseñas -->
+<div class="sigebi-card" style="margin-top: 1.5rem;">
+    <h2>Reseñas</h2>
+    <p class="descripcion">Opiniones de otros usuarios sobre este libro.</p>
+
+    @if (rol == "Estudiante" || rol == "Docente")
+    {
+        <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h4 style="color: #e2e8f0; margin-bottom: 1rem;">Deja tu opinión</h4>
+            <form method="post" asp-action="AgregarResena">
+                <input type="hidden" name="recursoId" value="@Model.Recurso.Id" />
+                
+                <div class="mb-3">
+                    <label class="form-label">Valoración</label>
+                    <div id="estrellas" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span onclick="seleccionarEstrellas(@i)" 
+                                  style="font-size: 2rem; cursor: pointer; color: #2d2d4e; transition: color 0.2s;"
+                                  id="estrella-@i">★</span>
+                        }
+                    </div>
+                    <input type="hidden" name="estrellas" id="input-estrellas" value="0" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Comentario</label>
+                    <textarea name="comentario" class="form-control" rows="3" 
+                              placeholder="¿Qué te pareció este libro?" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-sigebi">Publicar Reseña</button>
+            </form>
+        </div>
+    }
+
+    @if (!Model.Resenas.Any())
+    {
+        <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+            <p>No hay reseñas aún. ¡Sé el primero en opinar!</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var resena in Model.Resenas)
+        {
+            <div style="border-bottom: 1px solid #2d2d4e; padding: 1.2rem 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="background: linear-gradient(135deg, #7c3aed, #2563eb); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem;">
+                            @resena.NombreUsuario.First()
+                        </div>
+                        <div>
+                            <p style="color: #e2e8f0; margin: 0; font-weight: 600; font-size: 0.9rem;">@resena.NombreUsuario</p>
+                            <p style="color: #64748b; margin: 0; font-size: 0.75rem;">@resena.FechaCreacion.ToShortDateString()</p>
+                        </div>
+                    </div>
+                    <div>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span style="color: @(i <= resena.Estrellas ? "#f59e0b" : "#2d2d4e"); font-size: 1rem;">★</span>
+                        }
+                    </div>
+                </div>
+                <p style="color: #94a3b8; margin: 0; line-height: 1.6;">@resena.Comentario</p>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+<script>
+    let estrellasSeleccionadas = 0;
+
+    function seleccionarEstrellas(n) {
+        estrellasSeleccionadas = n;
+        document.getElementById('input-estrellas').value = n;
+        for (let i = 1; i <= 5; i++) {
+            const el = document.getElementById(`estrella-${i}`);
+            el.style.color = i <= n ? '#f59e0b' : '#2d2d4e';
+        }
+    }
+
+    // Hover effect
+    for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`estrella-${i}`);
+        if (el) {
+            el.addEventListener('mouseover', () => {
+                for (let j = 1; j <= 5; j++) {
+                    document.getElementById(`estrella-${j}`).style.color = j <= i ? '#f59e0b' : '#2d2d4e';
+                }
+            });
+            el.addEventListener('mouseout', () => {
+                for (let j = 1; j <= 5; j++) {
+                    document.getElementById(`estrella-${j}`).style.color = j <= estrellasSeleccionadas ? '#f59e0b' : '#2d2d4e';
+                }
+            });
+        }
+    }
+</script>
+}

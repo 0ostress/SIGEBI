@@ -14,6 +14,7 @@ namespace SIGEBI.Persistence.Context
         public DbSet<Prestamo> Prestamos { get; set; }
         public DbSet<Penalizacion> Penalizaciones { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
+        public DbSet<Resena> Resenas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +59,20 @@ namespace SIGEBI.Persistence.Context
                 .HasOne(n => n.Usuario)
                 .WithMany(u => u.Notificaciones)
                 .HasForeignKey(n => n.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Resena>().ToTable("Resenas");
+
+            modelBuilder.Entity<Resena>()
+                .HasOne(r => r.Usuario)
+                .WithMany()
+                .HasForeignKey(r => r.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Resena>()
+                .HasOne(r => r.Recurso)
+                .WithMany()
+                .HasForeignKey(r => r.RecursoId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

@@ -8,11 +8,13 @@ namespace SIGEBI.Web.Controllers
     {
         private readonly RecursoApiService _recursoApiService;
         private readonly ImagenApiService _imagenApiService;
+        private readonly ResenaApiService _resenaApiService;
 
-        public RecursosController(RecursoApiService recursoApiService, ImagenApiService imagenApiService)
+        public RecursosController(RecursoApiService recursoApiService, ImagenApiService imagenApiService, ResenaApiService resenaApiService)
         {
             _recursoApiService = recursoApiService;
             _imagenApiService = imagenApiService;
+            _resenaApiService = resenaApiService;
         }
 
         public async Task<IActionResult> Index()
@@ -89,6 +91,44 @@ namespace SIGEBI.Web.Controllers
                 TempData["Error"] = mensaje;
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Detalle(int id)
+        {
+            var recurso = await _recursoApiService.ObtenerPorIdAsync(id);
+            if (recurso == null)
+            {
+                TempData["Error"] = "Recurso no encontrado.";
+                return RedirectToAction("Disponibles");
+            }
+
+            var resenas = await _resenaApiService.ObtenerPorRecursoAsync(id);
+            var promedio = resenas.Any() ? resenas.Average(r => r.Estrellas) : 0;
+
+            var viewModel = new SIGEBI.Web.ViewModels.RecursoDetalleViewModel
+            {
+                Recurso = recurso,
+                Resenas = resenas,
+                PromedioEstrellas = Math.Round(promedio, 1)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarResena(int recursoId, int estrellas, string comentario)
+        {
+            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
+            if (string.IsNullOrEmpty(usuarioIdStr))
+                return RedirectToAction("Login", "Auth");
+
+            var (exito, mensaje) = await _resenaApiService.CrearAsync(recursoId, int.Parse(usuarioIdStr), estrellas, comentario);
+            if (exito)
+                TempData["Exito"] = mensaje;
+            else
+                TempData["Error"] = mensaje;
+
+            return RedirectToAction("Detalle", new { id = recursoId });
         }
     }
 }

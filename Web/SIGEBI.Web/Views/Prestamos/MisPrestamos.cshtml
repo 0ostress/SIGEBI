@@ -54,13 +54,21 @@
                             </span>
                         </td>
                         <td>
-                            @if (prestamo.Estado == "Activo" && prestamo.FechaVencimiento > DateTime.Now)
-                            {
-                                <form method="post" asp-action="Renovar" style="display:inline">
-                                    <input type="hidden" name="prestamoId" value="@prestamo.Id" />
-                                    <button type="submit" class="btn-outline-sigebi">Renovar +7 días</button>
-                                </form>
-                            }
+                           @if (prestamo.Estado == "Activo" && prestamo.FechaVencimiento > DateTime.Now)
+{
+    @if (prestamo.CantidadRenovaciones >= 1)
+    {
+        <span class="badge-inactivo">Ya renovado</span>
+    }
+    else
+    {
+        <form method="post" asp-action="Renovar" style="display:inline"
+              onsubmit="return confirm('¿Deseas renovar este préstamo por 7 días más? Solo puedes renovar una vez por préstamo.')">
+            <input type="hidden" name="prestamoId" value="@prestamo.Id" />
+            <button type="submit" class="btn-outline-sigebi">Renovar +7 días</button>
+        </form>
+    }
+}
                         </td>
                     </tr>
                 }

@@ -222,21 +222,23 @@ namespace SIGEBI.Business.UseCases
             if (prestamo.UsuarioId != usuarioId)
                 return false;
 
-            // Solo se puede renovar si no está vencido
             if (prestamo.FechaVencimiento < DateTime.Now)
                 return false;
 
-            // Extender 7 días más
+            // Limite de 1 renovacion por prestamo
+            if (prestamo.CantidadRenovaciones >= 1)
+                throw new Exception("Este prestamo ya fue renovado una vez. No se permiten mas renovaciones.");
+
             prestamo.FechaVencimiento = prestamo.FechaVencimiento.AddDays(7);
+            prestamo.CantidadRenovaciones += 1;
             _prestamoRepository.Update(prestamo);
 
-            // Notificar al estudiante
             var recurso = await _recursoRepository.GetByIdAsync(prestamo.RecursoId);
             var notificacion = new Notificacion
             {
                 UsuarioId = usuarioId,
                 Tipo = "PrestamoRenovado",
-                Mensaje = $"Tu prestamo del libro '{recurso?.Titulo}' ha sido renovado exitosamente. Nueva fecha de vencimiento: {prestamo.FechaVencimiento.ToShortDateString()}.",
+                Mensaje = $"Tu prestamo del libro '{recurso?.Titulo}' ha sido renovado exitosamente. Nueva fecha de vencimiento: {prestamo.FechaVencimiento.ToShortDateString()}. Recuerda que solo puedes renovar una vez por prestamo.",
                 Leida = false,
                 FechaCreacion = DateTime.Now
             };
@@ -257,7 +259,8 @@ namespace SIGEBI.Business.UseCases
                 FechaInicio = p.FechaInicio,
                 FechaVencimiento = p.FechaVencimiento,
                 FechaDevolucion = p.FechaDevolucion,
-                Estado = p.Estado
+                Estado = p.Estado,
+                CantidadRenovaciones = p.CantidadRenovaciones
             };
         }
     }

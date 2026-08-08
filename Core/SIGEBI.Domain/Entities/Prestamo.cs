@@ -14,5 +14,7 @@
         public Usuario Usuario { get; set; }
         public RecursoBibliografico Recurso { get; set; }
         public Penalizacion Penalizacion { get; set; }
+
+        public int CantidadRenovaciones { get; set; } = 0;
     }
 }

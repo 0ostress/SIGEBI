@@ -11,5 +11,7 @@
         public DateTime FechaVencimiento { get; set; }
         public DateTime? FechaDevolucion { get; set; }
         public string Estado { get; set; }
+
+        public int CantidadRenovaciones { get; set; }
     }
 }

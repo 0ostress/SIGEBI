@@ -30,8 +30,38 @@
         <!-- Info -->
         <div>
             <h2 style="font-size: 1.8rem; margin-bottom: 0.3rem;">@Model.Recurso.Titulo</h2>
-            <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 0.3rem;">@Model.Recurso.Autor</p>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">@Model.Recurso.Categoria</p>
+<p style="color: #94a3b8; font-size: 1rem; margin-bottom: 0.3rem;">@Model.Recurso.Autor</p>
+<p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">@Model.Recurso.Categoria</p>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem;">
+    @if (!string.IsNullOrEmpty(Model.Recurso.ISBN))
+    {
+        <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+            <p style="color: #64748b; font-size: 0.75rem; margin: 0;">ISBN</p>
+            <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.ISBN</p>
+        </div>
+    }
+    <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+        <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Categoría</p>
+        <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.Categoria</p>
+    </div>
+    <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+        <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Agregado a la plataforma</p>
+        <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.FechaRegistro.ToShortDateString()</p>
+    </div>
+    <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+        <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Estado</p>
+        <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.Estado</p>
+    </div>
+    <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+        <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Ejemplares Totales</p>
+        <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.CantidadTotal</p>
+    </div>
+    <div style="background: rgba(124,58,237,0.08); border: 1px solid #2d2d4e; border-radius: 8px; padding: 0.8rem;">
+        <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Ejemplares Disponibles</p>
+        <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; font-weight: 600;">@Model.Recurso.CantidadDisponible</p>
+    </div>
+</div>
 
             <!-- Promedio estrellas -->
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">

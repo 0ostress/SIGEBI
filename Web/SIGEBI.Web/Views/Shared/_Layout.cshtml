@@ -280,9 +280,6 @@ else if (rol == "Estudiante" || rol == "Docente")
         <a class="nav-link" asp-controller="Recursos" asp-action="Disponibles">Catálogo</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" asp-controller="Prestamos" asp-action="Solicitar">Solicitar Préstamo</a>
-    </li>
-    <li class="nav-item">
         <a class="nav-link" asp-controller="Prestamos" asp-action="MisPrestamos">Mis Préstamos</a>
     </li>
     <li class="nav-item">
@@ -292,12 +289,12 @@ else if (rol == "Estudiante" || rol == "Docente")
                 
             </ul>
             <ul class="navbar-nav ms-auto align-items-center">
-@if (Context.Session.GetString("Nombre") != null)
+@if (Context.Session.GetString("Rol") == "Estudiante" || Context.Session.GetString("Rol") == "Docente")
 {
     <li class="nav-item">
-        <a class="nav-link position-relative" asp-controller="Notificaciones" asp-action="Index" style="font-size: 1.2rem;">
-            🔔
-            <span id="badge-notif" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
+        <a class="nav-link position-relative" asp-controller="Recursos" asp-action="Disponibles" style="font-size: 1.2rem;">
+            🛒
+            <span id="navbar-carrito-badge" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
         </a>
     </li>
     <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">

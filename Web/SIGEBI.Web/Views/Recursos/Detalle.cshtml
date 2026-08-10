@@ -85,7 +85,9 @@
             <!-- Botón solicitar -->
             @if (rol == "Estudiante" || rol == "Docente")
             {
-                <a asp-controller="Prestamos" asp-action="Solicitar" class="btn-sigebi">Solicitar Préstamo</a>
+                <button onclick="agregarDesdeDetalle(@Model.Recurso.Id, '@Model.Recurso.Titulo.Replace("'", "\\'")', '@Model.Recurso.Autor.Replace("'", "\\'")')" class="btn-sigebi">
+    + Agregar al Carrito
+</button>
             }
         </div>
     </div>
@@ -190,5 +192,109 @@
             });
         }
     }
+
+
+async function agregarDesdeDetalle(id, titulo, autor) {
+    const response = await fetch('/Carrito/Agregar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `recursoId=${id}&titulo=${encodeURIComponent(titulo)}&autor=${encodeURIComponent(autor)}`
+    });
+    const resultado = await response.json();
+    if (resultado.exito) {
+        mostrarToast(`"${titulo}" agregado al carrito.`);
+        const badge = document.getElementById('navbar-carrito-badge');
+        if (badge) {
+            badge.style.display = 'inline';
+            badge.textContent = resultado.cantidad;
+        }
+    } else {
+        mostrarToast('Este libro ya está en tu carrito.', 'error');
+    }
+}
+
+async function cargarCarritoNavbar() {
+    try {
+        const response = await fetch('/Carrito/ObtenerItems');
+        const items = await response.json();
+        const badge = document.getElementById('navbar-carrito-badge');
+        if (badge) {
+            if (items.length > 0) {
+                badge.style.display = 'inline';
+                badge.textContent = items.length;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (e) {}
+}
+
+async function abrirCarritoGlobal() {
+    const response = await fetch('/Carrito/ObtenerItems');
+    const items = await response.json();
+    const container = document.getElementById('carrito-global-items');
+    if (items.length === 0) {
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Tu carrito está vacío.</p>';
+    } else {
+        container.innerHTML = items.map(item => `
+            <div style="background:rgba(124,58,237,0.1); border:1px solid #2d2d4e; border-radius:10px; padding:0.8rem 1rem; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <p style="color:#e2e8f0; margin:0; font-weight:600; font-size:0.9rem;">${item.titulo}</p>
+                    <p style="color:#94a3b8; margin:0; font-size:0.8rem;">${item.autor}</p>
+                </div>
+                <button onclick="quitarDelCarritoGlobal(${item.recursoId})" style="background:rgba(239,68,68,0.2); border:none; color:#ef4444; padding:0.3rem 0.6rem; border-radius:6px; cursor:pointer;">🗑</button>
+            </div>
+        `).join('');
+    }
+    document.getElementById('modal-carrito-global').style.display = 'flex';
+}
+
+async function quitarDelCarritoGlobal(recursoId) {
+    const formData = new FormData();
+    formData.append('recursoId', recursoId);
+    await fetch('/Carrito/Quitar', {
+        method: 'POST',
+        body: formData
+    });
+    
+    // Actualizar el contenido del modal directamente
+    const response = await fetch('/Carrito/ObtenerItems');
+    const items = await response.json();
+    const container = document.getElementById('carrito-global-items');
+    const badge = document.getElementById('navbar-carrito-badge');
+    
+    if (items.length === 0) {
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Tu carrito está vacío.</p>';
+        if (badge) badge.style.display = 'none';
+    } else {
+        container.innerHTML = items.map(item => `
+            <div style="background:rgba(124,58,237,0.1); border:1px solid #2d2d4e; border-radius:10px; padding:0.8rem 1rem; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <p style="color:#e2e8f0; margin:0; font-weight:600; font-size:0.9rem;">${item.titulo}</p>
+                    <p style="color:#94a3b8; margin:0; font-size:0.8rem;">${item.autor}</p>
+                </div>
+                <button onclick="quitarDelCarritoGlobal(${item.recursoId})" style="background:rgba(239,68,68,0.2); border:none; color:#ef4444; padding:0.3rem 0.6rem; border-radius:6px; cursor:pointer;">🗑</button>
+            </div>
+        `).join('');
+        if (badge) {
+            badge.style.display = 'inline';
+            badge.textContent = items.length;
+        }
+    }
+}
+
+async function confirmarCarritoGlobal() {
+    const response = await fetch('/Carrito/Confirmar', { method: 'POST' });
+    const resultado = await response.json();
+    cerrarCarritoGlobal();
+    cargarCarritoNavbar();
+    mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s) exitosamente.`);
+}
+
+function cerrarCarritoGlobal() {
+    document.getElementById('modal-carrito-global').style.display = 'none';
+}
 </script>
+
+}
 }

@@ -8,26 +8,27 @@ namespace SIGEBI.Web.Controllers
     {
         private readonly PrestamoApiService _prestamoApiService;
 
-        public CarritoController(PrestamoApiService prestamoApiService)
+        public CarritoController(PrestamoApiService prestamoApiService)     
         {
             _prestamoApiService = prestamoApiService;
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public IActionResult Agregar(int recursoId, string titulo, string autor)
         {
             var carrito = ObtenerCarrito();
 
-            if (!carrito.Any(c => c.RecursoId == recursoId))
-            {
-                carrito.Add(new CarritoItem { RecursoId = recursoId, Titulo = titulo, Autor = autor });
-                GuardarCarrito(carrito);
-            }
+            if (carrito.Any(c => c.RecursoId == recursoId))
+                return Json(new { exito = false, mensaje = "Este libro ya está en tu carrito.", cantidad = carrito.Count });
 
+            carrito.Add(new CarritoItem { RecursoId = recursoId, Titulo = titulo, Autor = autor });
+            GuardarCarrito(carrito);
             return Json(new { exito = true, cantidad = carrito.Count });
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public IActionResult Quitar(int recursoId)
         {
             var carrito = ObtenerCarrito();
@@ -37,6 +38,7 @@ namespace SIGEBI.Web.Controllers
         }
 
         [HttpGet]
+        [IgnoreAntiforgeryToken]
         public IActionResult ObtenerItems()
         {
             var carrito = ObtenerCarrito();
@@ -44,6 +46,7 @@ namespace SIGEBI.Web.Controllers
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Confirmar()
         {
             var carrito = ObtenerCarrito();
@@ -67,6 +70,7 @@ namespace SIGEBI.Web.Controllers
 
             return Json(new { exito = true, exitosos, fallidos });
         }
+
 
         private List<CarritoItem> ObtenerCarrito()
         {

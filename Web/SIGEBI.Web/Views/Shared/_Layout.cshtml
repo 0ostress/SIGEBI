@@ -213,6 +213,11 @@ select {
     background-color: #1a1a2e !important;
     color: #e2e8f0 !important;
 }
+
+@@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
     </style>
 </head>
 <body>
@@ -289,28 +294,38 @@ else if (rol == "Estudiante" || rol == "Docente")
                 
             </ul>
             <ul class="navbar-nav ms-auto align-items-center">
-@if (Context.Session.GetString("Rol") == "Estudiante" || Context.Session.GetString("Rol") == "Docente")
-{
-<li class="nav-item">
-    <a class="nav-link position-relative" onclick="abrirCarritoGlobal()" style="font-size: 1.2rem; cursor:pointer;">
-        🛒
-        <span id="navbar-carrito-badge" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
-    </a>
-</li>
-    <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
-        👤 @Context.Session.GetString("Nombre") — @Context.Session.GetString("Rol")
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
-    </li>
-}
-    
+    @if (Context.Session.GetString("Nombre") != null)
+    {
+        <li class="nav-item">
+            <a class="nav-link position-relative" asp-controller="Notificaciones" asp-action="Index" style="font-size: 1.2rem;">
+                🔔
+                <span id="badge-notif" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
+            </a>
+        </li>
+
+        @if (Context.Session.GetString("Rol") == "Estudiante" || Context.Session.GetString("Rol") == "Docente")
+        {
+            <li class="nav-item">
+<span class="nav-link position-relative" onclick="abrirCarritoGlobal()" style="font-size: 1.2rem; cursor:pointer;">
+    🛒
+    <span id="navbar-carrito-badge" style="position: absolute; top: 2px; right: 2px; background: #ef4444; color: white; border-radius: 50%; font-size: 0.6rem; padding: 2px 5px; display: none;">0</span>
+</span>
+            </li>
+        }
+
+        <li class="nav-item" style="padding: 0.5rem 1rem; color: #94a3b8; font-size: 0.9rem; display: flex; align-items: center;">
+            👤 @Context.Session.GetString("Nombre") — @Context.Session.GetString("Rol")
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Auth" asp-action="Logout" style="color: #ef4444 !important;">Cerrar Sesión</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Auth" asp-action="Login">Iniciar Sesión</a>
+        </li>
+    }
 </ul>
         </div>
     </div>
@@ -361,9 +376,9 @@ else
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 
 
 <script>
@@ -399,10 +414,9 @@ else
         } catch (e) {}
     }
 
-    async function abrirCarritoGlobal() {
-        const response = await fetch('/Carrito/ObtenerItems');
-        const items = await response.json();
-        const container = document.getElementById('carrito-global-items');
+async function abrirCarritoGlobal() {
+    console.log('abriendo carrito...');
+    const response = await fetch('/Carrito/ObtenerItems');
 
         if (items.length === 0) {
             container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:1rem;">Tu carrito está vacío. Ve al catálogo para agregar libros.</p>';
@@ -421,27 +435,25 @@ else
     }
 
     async function quitarDelCarritoGlobal(recursoId) {
-        await fetch('/Carrito/Quitar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '' },
-            body: JSON.stringify(recursoId)
-        });
-        cargarCarritoNavbar();
-        abrirCarritoGlobal();
-    }
+    await fetch(`/Carrito/Quitar?recursoId=${recursoId}`, {
+        method: 'POST'
+    });
+    cargarCarritoNavbar();
+    abrirCarritoGlobal();
+}
 
     async function confirmarCarritoGlobal() {
         const response = await fetch('/Carrito/Confirmar', { method: 'POST' });
         const resultado = await response.json();
         cerrarCarritoGlobal();
         cargarCarritoNavbar();
-        if (resultado.exitosos > 0 && resultado.fallidos === 0)
-            alert(`✅ ${resultado.exitosos} solicitud(es) enviada(s) exitosamente. El bibliotecario las revisará pronto.`);
-        else if (resultado.exitosos > 0)
-            alert(`✅ ${resultado.exitosos} enviada(s). ❌ ${resultado.fallidos} no se pudo(ieron) procesar.`);
-        else
-            alert('❌ No se pudo procesar ninguna solicitud.');
-    }
+// En confirmarCarritoGlobal:
+if (resultado.exitosos > 0 && resultado.fallidos === 0)
+    mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s). El bibliotecario las revisará pronto.`);
+else if (resultado.exitosos > 0)
+    mostrarToast(`${resultado.exitosos} enviada(s). ${resultado.fallidos} no se pudo(ieron) procesar.`, 'error');
+else
+    mostrarToast('No se pudo procesar ninguna solicitud.', 'error');
 
     function cerrarCarritoGlobal() {
         document.getElementById('modal-carrito-global').style.display = 'none';
@@ -449,6 +461,27 @@ else
 
     cargarNotificaciones();
     cargarCarritoNavbar();
+
+function mostrarToast(mensaje, tipo = 'exito') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed; bottom: 2rem; right: 2rem; z-index: 99999;
+        background: ${tipo === 'exito' ? 'rgba(16,185,129,0.95)' : 'rgba(239,68,68,0.95)'};
+        color: white; padding: 1rem 1.5rem; border-radius: 12px;
+        font-size: 0.9rem; font-weight: 500; max-width: 350px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease;
+    `;
+    toast.textContent = (tipo === 'exito' ? '✅ ' : '❌ ') + mensaje;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
 </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

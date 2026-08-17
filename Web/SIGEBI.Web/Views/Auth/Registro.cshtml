@@ -13,15 +13,17 @@
     <title>SIGEBI — Registro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
-        body {
-            background-color: #0f0f1a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+body {
+    background-color: #0f0f1a;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 2rem;
+}
         .register-card {
             background: #1a1a2e;
             border: 1px solid #2d2d4e;
@@ -91,9 +93,24 @@
         select option { background-color: #1a1a2e; color: #e2e8f0; }
 
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    background-color: #0f0f1a !important;
+}
+
+
     </style>
 </head>
-<body>
+<body style="display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; background-color:#0f0f1a;">
     <div class="register-card">
         <div class="register-title">SIGEBI</div>
         <div class="register-subtitle">Crear nueva cuenta</div>

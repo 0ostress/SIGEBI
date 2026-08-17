@@ -44,7 +44,6 @@ namespace SIGEBI.Web.Controllers
             var carrito = ObtenerCarrito();
             return Json(carrito);
         }
-
         [HttpPost]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Confirmar()
@@ -53,24 +52,29 @@ namespace SIGEBI.Web.Controllers
             var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
 
             if (string.IsNullOrEmpty(usuarioIdStr) || !carrito.Any())
-                return Json(new { exito = false, mensaje = "No hay items en el carrito." });
+                return Json(new { exito = false, mensaje = "No hay items en el carrito.", exitosos = 0, fallidos = 0 });
 
             var usuarioId = int.Parse(usuarioIdStr);
             int exitosos = 0;
             int fallidos = 0;
+            var errores = new List<string>();
 
             foreach (var item in carrito)
             {
-                var (exito, _) = await _prestamoApiService.SolicitarPrestamoAsync(usuarioId, item.RecursoId);
+                var (exito, mensaje) = await _prestamoApiService.SolicitarPrestamoAsync(usuarioId, item.RecursoId);
                 if (exito) exitosos++;
-                else fallidos++;
+                else
+                {
+                    fallidos++;
+                    errores.Add(mensaje);
+                }
             }
 
-            GuardarCarrito(new List<CarritoItem>());
+            if (exitosos > 0)
+                GuardarCarrito(new List<CarritoItem>());
 
-            return Json(new { exito = true, exitosos, fallidos });
+            return Json(new { exito = exitosos > 0, exitosos, fallidos, errores });
         }
-
 
         private List<CarritoItem> ObtenerCarrito()
         {

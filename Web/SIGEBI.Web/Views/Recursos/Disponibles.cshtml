@@ -152,13 +152,20 @@ async function quitarDelCarritoGlobal(recursoId) {
     }
 }
 
-    async function confirmarCarritoGlobal() {
-        const response = await fetch('/Carrito/Confirmar', { method: 'POST' });
-        const resultado = await response.json();
-        cerrarCarritoGlobal();
-        cargarCarritoNavbar();
-        mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s) exitosamente.`);
-    }
+async function confirmarCarritoGlobal() {
+    const response = await fetch('/Carrito/Confirmar', { method: 'POST' });
+    const resultado = await response.json();
+    cerrarCarritoGlobal();
+    
+    // Actualizar badge manualmente
+    const badge = document.getElementById('navbar-carrito-badge');
+    if (badge) badge.style.display = 'none';
+    
+    if (resultado.exitosos > 0)
+        mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s). El bibliotecario las revisará pronto.`);
+    else
+        mostrarToast('No se pudo procesar la solicitud.', 'error');
+}
 
     function cerrarCarritoGlobal() {
         document.getElementById('modal-carrito-global').style.display = 'none';

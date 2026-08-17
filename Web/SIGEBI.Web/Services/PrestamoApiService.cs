@@ -10,6 +10,8 @@ namespace SIGEBI.Web.Services
         public PrestamoApiService(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient("SigebiAPI");
+            if (_httpClient.BaseAddress == null)
+                _httpClient.BaseAddress = new Uri("http://localhost:5200/");
         }
 
         public async Task<IEnumerable<PrestamoDTO>> ObtenerTodosAsync()

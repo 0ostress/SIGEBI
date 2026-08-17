@@ -120,8 +120,9 @@
 
                 <div class="mb-3">
                     <label class="form-label">Comentario</label>
-                    <textarea name="comentario" class="form-control" rows="3" 
-                              placeholder="¿Qué te pareció este libro?" required></textarea>
+<textarea name="comentario" class="form-control" rows="3" 
+          placeholder="¿Qué te pareció este libro?" required
+          style="background: rgba(255,255,255,0.05) !important; color: #e2e8f0 !important;"></textarea>
                 </div>
 
                 <button type="submit" class="btn-sigebi">Publicar Reseña</button>
@@ -287,8 +288,15 @@ async function confirmarCarritoGlobal() {
     const response = await fetch('/Carrito/Confirmar', { method: 'POST' });
     const resultado = await response.json();
     cerrarCarritoGlobal();
-    cargarCarritoNavbar();
-    mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s) exitosamente.`);
+    
+    // Actualizar badge manualmente
+    const badge = document.getElementById('navbar-carrito-badge');
+    if (badge) badge.style.display = 'none';
+    
+    if (resultado.exitosos > 0)
+        mostrarToast(`${resultado.exitosos} solicitud(es) enviada(s). El bibliotecario las revisará pronto.`);
+    else
+        mostrarToast('No se pudo procesar la solicitud.', 'error');
 }
 
 function cerrarCarritoGlobal() {

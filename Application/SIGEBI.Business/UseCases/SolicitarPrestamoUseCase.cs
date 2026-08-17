@@ -56,7 +56,7 @@ namespace SIGEBI.Business.UseCases
                 throw new Exception("El usuario no se encuentra activo.");
 
             var prestamosActivos = await _prestamoRepository.GetByUsuarioIdAsync(usuarioId);
-            var cantidadActivos = prestamosActivos.Count(p => p.Estado == "Activo");
+            var cantidadActivos = prestamosActivos.Count(p => p.Estado == "Activo" || p.Estado == "Pendiente");
             if (cantidadActivos >= LIMITE_PRESTAMOS_SIMULTANEOS)
                 throw new Exception("El usuario alcanzo el limite de prestamos simultaneos.");
 
@@ -75,28 +75,30 @@ namespace SIGEBI.Business.UseCases
                 Estado = "Pendiente"
             };
 
-            // Reservar el ejemplar mientras esta pendiente
+            await _prestamoRepository.AddAsync(nuevoPrestamo);
+
             recurso.CantidadDisponible -= 1;
             if (recurso.CantidadDisponible == 0)
                 recurso.Estado = "Prestado";
             _recursoRepository.Update(recurso);
 
-            // Notificar a todos los bibliotecarios y admins
+            // Notificar a bibliotecarios secuencialmente
             var todosUsuarios = await _usuarioRepository.GetAllAsync();
-            var bibliotecarios = todosUsuarios.Where(u => u.Rol == "Bibliotecario" || u.Rol == "Administrador");
+            var bibliotecarios = todosUsuarios.Where(u => u.Rol == "Bibliotecario" || u.Rol == "Administrador").ToList();
 
             foreach (var bibliotecario in bibliotecarios)
             {
-                var notificacionBibliotecario = new Notificacion
+                var notificacion = new Notificacion
                 {
                     UsuarioId = bibliotecario.Id,
                     Tipo = "SolicitudPrestamo",
-                    Mensaje = $"El usuario {usuario.Nombre} {usuario.Apellido} ha solicitado el prestamo del libro '{recurso.Titulo}'. Fecha de solicitud: {DateTime.Now.ToShortDateString()}.",
+                    Mensaje = $"El usuario {usuario.Nombre} {usuario.Apellido} ha solicitado el prestamo del libro '{recurso.Titulo}'. Fecha: {DateTime.Now.ToShortDateString()}.",
                     Leida = false,
                     FechaCreacion = DateTime.Now
                 };
-                await _notificacionRepository.AddAsync(notificacionBibliotecario);
+                await _notificacionRepository.AddAsync(notificacion);
             }
+
             return MapToDTO(nuevoPrestamo);
         }
 

@@ -13,24 +13,27 @@
     <title>SIGEBI — Iniciar Sesión</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
-        body {
-            background-color: #0f0f1a;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card {
-            background: #1a1a2e;
-            border: 1px solid #2d2d4e;
-            border-radius: 16px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
-        }
+body {
+    background-color: #0f0f1a;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    margin: 0;
+    padding: 2rem;
+}
+
+.login-card {
+    background: #1a1a2e;
+    border: 1px solid #2d2d4e;
+    border-radius: 16px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
         .login-title {
             font-size: 2rem;
             font-weight: 900;
@@ -83,17 +86,46 @@
         .register-link { color: #7c3aed; text-decoration: none; }
         .register-link:hover { color: #a855f7; }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    background-color: #0f0f1a !important;
+}
+
+.login-card {
+    background: #1a1a2e;
+    border: 1px solid #2d2d4e;
+    border-radius: 16px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
     </style>
 </head>
-<body>
+<body style="display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; padding:2rem; background-color:#0f0f1a;">
     <div class="login-card">
         <div class="login-title">SIGEBI</div>
         <div class="login-subtitle">Sistema de Gestión de Bibliotecas Institucional</div>
 
         @if (TempData["Error"] != null)
         {
-            <div class="alert-error">✗ @TempData["Error"]</div>
+            <div class="alert-error">✗ @TempData["Error"]</div> 
         }
 
         <form method="post" asp-action="Login">
